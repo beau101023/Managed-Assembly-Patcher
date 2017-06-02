@@ -1,7 +1,7 @@
-﻿<Application x:Class="Main.cs.App"
+﻿<Application x:Class="Managed_Assembly_Patcher.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:Main.cs"
+             xmlns:local="clr-namespace:Managed_Assembly_Patcher"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
          

@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace Main.cs
+namespace Managed_Assembly_Patcher
 {
     /// <summary>
     /// Interaction logic for App.xaml

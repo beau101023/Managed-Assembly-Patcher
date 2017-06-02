@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Main.cs
+namespace Managed_Assembly_Patcher
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml

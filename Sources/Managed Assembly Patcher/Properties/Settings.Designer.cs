@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Main.cs.Properties
+namespace Managed_Assembly_Patcher.Properties
 {
 
 
