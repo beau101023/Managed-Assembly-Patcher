@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Managed_Assembly_Patcher.Analyzer
+namespace MAP.Analyzer
 {
     class AnalysisResults
     {

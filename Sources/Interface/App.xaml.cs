@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace Managed_Assembly_Patcher
+namespace MAP
 {
     /// <summary>
     /// Interaction logic for App.xaml

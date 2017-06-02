@@ -3,7 +3,7 @@
 ﻿using System.Reflection;
 using System.Runtime.InteropServices;
 
-#if THREAD_SAFE
+/*#if THREAD_SAFE
 [assembly: AssemblyTitle("dnlib (thread safe)")]
 #else
 [assembly: AssemblyTitle("dnlib")]
@@ -17,4 +17,4 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyCulture("")]
 [assembly: ComVisible(false)]
 [assembly: AssemblyVersion("1.6.0.0")]
-[assembly: AssemblyFileVersion("1.6.0.0")]
+[assembly: AssemblyFileVersion("1.6.0.0")]*/

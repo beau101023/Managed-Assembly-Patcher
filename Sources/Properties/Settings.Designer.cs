@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Managed_Assembly_Patcher.Properties
+namespace MAP.Properties
 {
 
 
