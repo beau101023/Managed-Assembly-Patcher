@@ -13,6 +13,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
+using MAP.Analysis;
+
 namespace MAP
 {
     /// <summary>
@@ -23,6 +25,13 @@ namespace MAP
         public MainWindow()
         {
             InitializeComponent();
+        }
+
+        private void testButtonPressed(object sender, MouseButtonEventArgs e)
+        {
+            Analyzer a = new Analyzer();
+            
+            
         }
     }
 }

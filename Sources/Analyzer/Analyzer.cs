@@ -6,22 +6,40 @@ using System.Threading.Tasks;
 using dnlib.DotNet;
 using dnlib.DotNet.Emit;
 
-namespace MAP.Analyzer
+namespace MAP.Analysis
 {
     class Analyzer
     {
-        ModuleDefMD module1, module2;
+        ModuleDefMD baseModule, modifiedModule;
 
         // loads modules
-        void LoadModules(string path1, string path2)
+        void LoadModules(string baseModulePath, string modifiedModulePath)
         {
-            module1 = ModuleDefMD.Load(path1);
-            module2 = ModuleDefMD.Load(path2);
+            baseModule = ModuleDefMD.Load(baseModulePath);
+            modifiedModule = ModuleDefMD.Load(modifiedModulePath);
+        }
+
+        void TestingMethod()
+        {
+            ModuleDefMD mod = ModuleDefMD.Load(typeof(Analyzer).Module);
+
+            System.Diagnostics.Debug.WriteLine(mod.Assembly.ToString());
         }
 
         AnalysisResults Analyze()
         {
-            module1.Assembly.ToString();
+            List<TypeDef> modifiedTypes = new List<TypeDef>();
+
+            foreach (TypeDef baseType in baseModule.GetTypes())
+            {
+                foreach(TypeDef modifiedType in modifiedModule.GetTypes())
+                {
+                    if(baseType != modifiedType)
+                    {
+                        modifiedTypes.Add(modifiedType);
+                    }
+                }
+            }
 
             return new AnalysisResults();
         }
