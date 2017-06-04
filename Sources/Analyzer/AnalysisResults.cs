@@ -8,5 +8,17 @@ namespace MAP.Analysis
 {
     class AnalysisResults
     {
+        AnalysisStatus status;
+
+        public AnalysisResults(AnalysisStatus _status)
+        {
+            status = _status;
+        }
+
+        public enum AnalysisStatus
+        {
+            Success,
+            FilesAreEqual
+        }
     }
 }
