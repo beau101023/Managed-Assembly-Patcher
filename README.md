@@ -1,2 +1,4 @@
 # Managed-Assembly-Patcher
-Utility for creating and applying multiple modifications to managed assemblies.
+A universal modloader project for managed assemblies, allowing multiple mods to be loaded at once. (within reason)
+
+## This is an incomplete project.
