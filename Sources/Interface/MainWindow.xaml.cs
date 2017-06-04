@@ -27,11 +27,11 @@ namespace MAP
             InitializeComponent();
         }
 
-        private void testButtonPressed(object sender, MouseButtonEventArgs e)
+        private void testButton_Click(object sender, RoutedEventArgs e)
         {
             Analyzer a = new Analyzer();
-            
-            
+
+            a.Test();
         }
     }
 }
