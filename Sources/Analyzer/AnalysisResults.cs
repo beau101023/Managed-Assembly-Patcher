@@ -10,7 +10,25 @@ namespace MAP.Analysis
     {
         AnalysisStatus status;
 
-        string[] editScript;
+        AnalysisResultsType resultType;
+
+        string[] editScript = null;
+
+        public AnalysisResults(AnalysisStatus _status, AnalysisResultsType _resultType, string[] _editScript)
+        {
+            status = _status;
+
+            resultType = _resultType;
+
+            editScript = _editScript;
+        }
+
+        public AnalysisResults(AnalysisStatus _status, AnalysisResultsType _resultType)
+        {
+            status = _status;
+
+            resultType = _resultType;
+        }
 
         public AnalysisResults(AnalysisStatus _status)
         {
@@ -37,7 +55,14 @@ namespace MAP.Analysis
         public enum AnalysisStatus
         {
             Success,
-            FilesAreEqual
+            FilesAreEqual,
+            PatchError
+        }
+
+        public enum AnalysisResultsType
+        {
+            RawFilePatch,
+            DNLibPatch
         }
     }
 }

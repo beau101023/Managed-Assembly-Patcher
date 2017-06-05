@@ -44,7 +44,6 @@ namespace MAP
             // Display OpenFileDialog by calling ShowDialog method 
             Nullable<bool> result = dlg.ShowDialog();
 
-
             // Get the selected file name and display in a TextBox 
             if (result == true)
             {
