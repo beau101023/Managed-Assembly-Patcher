@@ -15,6 +15,23 @@ namespace MAP.Analysis
             status = _status;
         }
 
+        public override string ToString()
+        {
+            string strRep = "";
+
+            switch(status)
+            {
+                case AnalysisStatus.Success:
+                    strRep += "S";
+                    break;
+                case AnalysisStatus.FilesAreEqual:
+                    strRep += "E";
+                    break;
+            }
+
+            return strRep;
+        }
+
         public enum AnalysisStatus
         {
             Success,

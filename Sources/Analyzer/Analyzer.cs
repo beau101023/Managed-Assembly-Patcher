@@ -42,7 +42,11 @@ namespace MAP.Analysis
                 return new AnalysisResults(AnalysisResults.AnalysisStatus.FilesAreEqual);
             }
 
-            return new AnalysisResults(AnalysisResults.AnalysisStatus.Success);
+            AnalysisResults results = new AnalysisResults(AnalysisResults.AnalysisStatus.Success);
+
+            System.Diagnostics.Debug.WriteLine(results);
+
+            return results;
         }
 
         /// <summary>
