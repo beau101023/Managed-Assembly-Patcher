@@ -22,8 +22,8 @@ namespace MAP
     /// </summary>
     public partial class MainWindow : Window
     {
-        public static string baseFile = "";
-        public static string modFile = "";
+        static string baseFile = "";
+        static string modFile = "";
 
         public MainWindow()
         {
@@ -58,15 +58,21 @@ namespace MAP
         private void testButton_Click(object sender, RoutedEventArgs e)
         {
             var filepath = getFilePathFromDialog();
-            textBox.Text = filepath;
+            file1Dir.Text = filepath;
             baseFile = filepath;
         }
 
         private void Test2_Click(object sender, RoutedEventArgs e)
         {
             var filepath = getFilePathFromDialog();
-            textBox1.Text = filepath;
+            file2Dir.Text = filepath;
             modFile = filepath;
+        }
+
+        private void makeResult_Click(object sender, RoutedEventArgs e)
+        {
+            var result = Analyzer.RawAnalyze(baseFile, modFile);
+            Result.Text = result.ToString();
         }
     }
 }
