@@ -29,8 +29,7 @@ namespace MAP
         {
             InitializeComponent();
         }
-
-        private void testButton_Click(object sender, RoutedEventArgs e)
+        private string getFilePathFromDialog()
         {
             // Create OpenFileDialog 
             Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
@@ -51,9 +50,22 @@ namespace MAP
             {
                 // Open document 
                 string filename = dlg.FileName;
-                baseFile = filename;
-                textBox.Text = filename;
+                return filename;
             }
+            // Else
+            return null;
+        }
+
+        private void testButton_Click(object sender, RoutedEventArgs e)
+        {
+            var filepath = getFilePathFromDialog();
+            textBox.Text = filepath;
+        }
+
+        private void Test2_Click(object sender, RoutedEventArgs e)
+        {
+            var filepath = getFilePathFromDialog();
+            textBox1.Text = filepath;
         }
     }
 }
