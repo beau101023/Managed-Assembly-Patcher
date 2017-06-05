@@ -12,7 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-
+using Microsoft.Win32;
 using MAP.Analysis;
 
 namespace MAP
@@ -22,6 +22,9 @@ namespace MAP
     /// </summary>
     public partial class MainWindow : Window
     {
+        string baseFile = "";
+        string modFile = "";
+
         public MainWindow()
         {
             InitializeComponent();
@@ -29,9 +32,28 @@ namespace MAP
 
         private void testButton_Click(object sender, RoutedEventArgs e)
         {
-            Analyzer a = new Analyzer();
+            // Create OpenFileDialog 
+            Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
 
-            a.Test();
+
+
+            // Set filter for file extension and default file extension 
+            dlg.DefaultExt = ".png";
+            dlg.Filter = "JPEG Files (*.jpeg)|*.jpeg|PNG Files (*.png)|*.png|JPG Files (*.jpg)|*.jpg|GIF Files (*.gif)|*.gif";
+
+
+            // Display OpenFileDialog by calling ShowDialog method 
+            Nullable<bool> result = dlg.ShowDialog();
+
+
+            // Get the selected file name and display in a TextBox 
+            if (result == true)
+            {
+                // Open document 
+                string filename = dlg.FileName;
+                baseFile = filename;
+                textBox.Text = filename;
+            }
         }
     }
 }

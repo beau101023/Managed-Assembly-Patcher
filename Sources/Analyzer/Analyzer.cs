@@ -59,7 +59,7 @@ namespace MAP.Analysis
 
             GenerateEditScript(baseBytes, modifiedBytes);
 
-            return new AnalysisResults();
+            return new AnalysisResults(AnalysisResults.AnalysisStatus.Success);
         }
 
 
@@ -131,6 +131,8 @@ namespace MAP.Analysis
             {
 
             }
+
+            return new string[0];
         }
     }
 }

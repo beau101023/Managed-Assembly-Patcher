@@ -10,6 +10,8 @@ namespace MAP.Analysis
     {
         AnalysisStatus status;
 
+        string[] editScript;
+
         public AnalysisResults(AnalysisStatus _status)
         {
             status = _status;
