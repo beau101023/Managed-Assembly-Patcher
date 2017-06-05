@@ -8,7 +8,7 @@ using dnlib.DotNet;
 using dnlib.DotNet.Emit;
 using DiffMatchPatch;
 
-namespace MAP.Analysis
+namespace MAP
 {
     class Analyzer
     {
@@ -63,7 +63,7 @@ namespace MAP.Analysis
             string baseString = File.ReadAllText(baseFilePath);
             string modifiedString = File.ReadAllText(modifiedFilePath);
 
-            string[] editScript = GenerateEditScript(baseString, modifiedString);
+            string editScript = GenerateEditScript(baseString, modifiedString);
 
             return new AnalysisResults(AnalysisResults.AnalysisStatus.Success, AnalysisResults.AnalysisResultsType.RawFilePatch, editScript);
         }
@@ -72,20 +72,31 @@ namespace MAP.Analysis
         /// <summary>
         /// Generates a list of instructions to transform one baseBytes into targetBytes with the least modification.
         /// </summary>
-        static private string[] GenerateEditScript(string baseString, string targetString)
+        static private string GenerateEditScript(string baseString, string targetString)
         {
             diff_match_patch patcher = new diff_match_patch();
 
             List<Patch> patches = patcher.patch_make(baseString, targetString);
 
-            string[] results = new string[patches.Count];
-
-            for(int i = 0; i < patches.Count; i++)
-            {
-                results[i] = patches[i].ToString();
-            }
+            string results = patcher.patch_toText(patches);
 
             return results;
+        }
+
+        static public string ApplyPatches(string filePath, string editScript)
+        {
+            diff_match_patch patcher = new diff_match_patch();
+
+            List<Patch> patches = patcher.patch_fromText(editScript);
+
+            Object[] patchedText = patcher.patch_apply(patches, File.ReadAllText(filePath));
+
+            return (patchedText[0] as string);
+        }
+
+        static public void ApplyPatches(string filePath, List<Patch> editScript)
+        {
+
         }
     }
 }

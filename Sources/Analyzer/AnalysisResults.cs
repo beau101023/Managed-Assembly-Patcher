@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MAP.Analysis
+namespace MAP
 {
     class AnalysisResults
     {
@@ -12,9 +12,9 @@ namespace MAP.Analysis
 
         AnalysisResultsType resultType;
 
-        string[] editScript = null;
+        string editScript = null;
 
-        public AnalysisResults(AnalysisStatus _status, AnalysisResultsType _resultType, string[] _editScript)
+        public AnalysisResults(AnalysisStatus _status, AnalysisResultsType _resultType, string _editScript)
         {
             status = _status;
 
@@ -43,10 +43,7 @@ namespace MAP.Analysis
             {
                 case AnalysisStatus.Success:
 
-                    foreach(string s in editScript)
-                    {
-                        strRep += s;
-                    }
+                    strRep += editScript;
 
                     break;
                 case AnalysisStatus.FilesAreEqual:
