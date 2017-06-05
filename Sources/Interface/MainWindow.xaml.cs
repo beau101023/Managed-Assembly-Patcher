@@ -77,7 +77,7 @@ namespace MAP
             {
                 if (result.status == AnalysisResults.AnalysisStatus.FilesAreEqual)
                 {
-                    Result.Text = result.editScript;
+                    Result.Text = "Error: files are equal!";
                     return;
                 }
                 else
