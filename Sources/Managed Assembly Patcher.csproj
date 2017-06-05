@@ -38,6 +38,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -62,6 +63,7 @@
     </Page>
     <Compile Include="Analyzer\AnalysisResults.cs" />
     <Compile Include="Analyzer\Analyzer.cs" />
+    <Compile Include="DiffMatchPatch.cs" />
     <Compile Include="Interface\App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>

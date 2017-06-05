@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.IO;
 using dnlib.DotNet;
 using dnlib.DotNet.Emit;
+using DiffMatchPatch;
 
 namespace MAP.Analysis
 {
@@ -39,10 +40,10 @@ namespace MAP.Analysis
             }
             else if(baseMod == modifiedMod)
             {
-                return new AnalysisResults(AnalysisResults.AnalysisStatus.FilesAreEqual);
+                return new AnalysisResults(AnalysisResults.AnalysisStatus.FilesAreEqual, AnalysisResults.AnalysisResultsType.NoPatch);
             }
 
-            AnalysisResults results = new AnalysisResults(AnalysisResults.AnalysisStatus.Success);
+            AnalysisResults results = new AnalysisResults(AnalysisResults.AnalysisStatus.Success, AnalysisResults.AnalysisResultsType.DNLibPatch);
 
             System.Diagnostics.Debug.WriteLine(results);
 
@@ -52,87 +53,34 @@ namespace MAP.Analysis
         /// <summary>
         /// Returns a bytewise edit script to transform the base file into the modified file specified with baseFilePath and modifiedFilePath respectively.
         /// </summary>
-        public static AnalysisResults BytewiseAnalyze(string baseFilePath, string modifiedFilePath)
+        public static AnalysisResults RawAnalyze(string baseFilePath, string modifiedFilePath)
         {
-            byte[] baseBytes = File.ReadAllBytes(baseFilePath);
-            byte[] modifiedBytes = File.ReadAllBytes(modifiedFilePath);
+            string baseString = File.ReadAllText(baseFilePath);
+            string modifiedString = File.ReadAllText(modifiedFilePath);
 
-            GenerateEditScript(baseBytes, modifiedBytes);
+            string[] editScript = GenerateEditScript(baseString, modifiedString);
 
-            return new AnalysisResults(AnalysisResults.AnalysisStatus.Success);
+            return new AnalysisResults(AnalysisResults.AnalysisStatus.Success, AnalysisResults.AnalysisResultsType.RawFilePatch, editScript);
         }
 
 
         /// <summary>
         /// Generates a list of instructions to transform one baseBytes into targetBytes with the least modification.
         /// </summary>
-        static private string[] GenerateEditScript(byte[] baseBytes, byte[] targetBytes)
+        static private string[] GenerateEditScript(string baseString, string targetString)
         {
-            /*
-            format of edit script:
-            A{byte},{int} - insert {byte} from target to base after index {int}
-            R{int} - remove a byte from base at index {int}
-            */ 
-            List<string> editScript = new List<string>();
+            diff_match_patch patcher = new diff_match_patch();
 
-            // implementation of https://neil.fraser.name/software/diff_match_patch/myers.pdf
-            int baseSize, targetSize;
+            List<Patch> patches = patcher.patch_make(baseString, targetString);
 
-            baseSize = baseBytes.Length;
-            targetSize = targetBytes.Length;
+            string[] results = new string[patches.Count];
 
-            int MAX = baseSize + targetSize;
-
-            int[] kValues = new int[MAX*2+1];
-
-            bool solutionFound = false;
-
-            for(int d = 0; d <= MAX; d++)
+            for(int i = 0; i <= patches.Count; i++)
             {
-                for(int k = -d; k <= d; k++)
-                {
-                    // down or right?
-                    bool down = (k == -d || (k != d && kValues[k - 1] < kValues[k + 1]));
-
-                    int kPrev = down ? k + 1 : k - 1;
-
-                    // start point
-                    int xStart = kValues[kPrev];
-                    int yStart = xStart - kPrev;
-
-                    // mid point
-                    int xMid = down ? xStart : xStart + 1;
-                    int yMid = xMid - k;
-
-                    // end point
-                    int xEnd = xMid;
-                    int yEnd = yMid;
-
-                    // follow diagonal
-                    int snake = 0;
-                    while (xEnd < baseSize && yEnd < targetSize && baseBytes[xEnd] == targetBytes[yEnd]) { xEnd++; yEnd++; snake++; }
-
-                    // save end point
-                    kValues[k] = xEnd;
-
-                    // check for solution
-                    if (xEnd >= baseSize && yEnd >= targetSize) /* solution has been found */
-                    {
-                        solutionFound = true;
-                    }
-                }
-                if(solutionFound)
-                {
-                    break;
-                }
+                results[i] = patches[i].ToString();
             }
 
-            foreach(int value in kValues)
-            {
-
-            }
-
-            return new string[0];
+            return results;
         }
     }
 }
