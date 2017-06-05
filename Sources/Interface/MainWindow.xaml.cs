@@ -71,7 +71,9 @@ namespace MAP
         private void makeResult_Click(object sender, RoutedEventArgs e)
         {
             var result = Analyzer.RawAnalyze(baseFile, modFile);
-            Result.Text = result.ToString();
+            var editScriptResult = result.ToString();
+            Result.Text = editScriptResult;
+            Analyzer.ApplyPatches(baseFile, editScriptResult);
         }
     }
 }
