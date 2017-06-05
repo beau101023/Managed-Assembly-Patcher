@@ -1,4 +1,4 @@
 # Managed-Assembly-Patcher
-A universal modloader project for managed assemblies, allowing multiple mods to be loaded at once. (within reason)
+A file patcher acting as a managed assembly mod loader.
 
 ## This is an incomplete project.
