@@ -77,7 +77,7 @@ namespace MAP
             {
                 if (result.status == AnalysisResults.AnalysisStatus.FilesAreEqual)
                 {
-                    Result.Text = result.ToString();
+                    Result.Text = result.editScript;
                     return;
                 }
                 else
