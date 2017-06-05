@@ -22,8 +22,8 @@ namespace MAP
     /// </summary>
     public partial class MainWindow : Window
     {
-        static string baseFile = "";
-        static string modFile = "";
+        static string baseFile = null;
+        static string modFile = null;
 
         public MainWindow()
         {
@@ -71,28 +71,48 @@ namespace MAP
 
         private void makeResult_Click(object sender, RoutedEventArgs e)
         {
-            AnalysisResults result = Analyzer.RawAnalyze(baseFile, modFile);
-
-            if(result.status != AnalysisResults.AnalysisStatus.Success)
+            Result.Text = makeAndgetResult();
+        }
+        private string makeAndgetResult()
+        {
+            if (modFile == null && baseFile == null)
             {
-                if (result.status == AnalysisResults.AnalysisStatus.FilesAreEqual)
+                return "Error: Missing base and, mod files";
+            }
+            else
+            {
+                if(baseFile == null)
                 {
-                    Result.Text = "Error: files are equal!";
-                    return;
-                }
-                else if(result.status == AnalysisResults.AnalysisStatus.PatchError)
+                    return "Error: Missing base file";
+                } else if(modFile == null)
                 {
-                    // !Error!
-                    Result.Text = "Error: PatchError";
-                    return;
+                    return "Error: Missing mod file";
+                } else if (!(modFile == null) && !(baseFile == null))
+                {
+                    AnalysisResults result = Analyzer.RawAnalyze(baseFile, modFile);
+
+                    if (result.status != AnalysisResults.AnalysisStatus.Success)
+                    {
+                        if (result.status == AnalysisResults.AnalysisStatus.FilesAreEqual)
+                        {
+                            return "Error: files are equal!";
+                        }
+                        else if (result.status == AnalysisResults.AnalysisStatus.PatchError)
+                        {
+                            // !Error!
+                            return "Error: PatchError";
+                        }
+                    }
+
+                    string moddedFile = System.IO.Path.GetFileNameWithoutExtension(baseFile) + "_modded" + System.IO.Path.GetExtension(baseFile);
+
+                    File.Copy(baseFile, moddedFile);
+
+                    Analyzer.ApplyPatches(moddedFile, result.editScript);
+                    return "Sucess!";
                 }
             }
-
-            string moddedFile = System.IO.Path.GetFileNameWithoutExtension(baseFile) + "_modded" + System.IO.Path.GetExtension(baseFile);
-
-            File.Copy(baseFile, moddedFile);
-
-            Analyzer.ApplyPatches(moddedFile, result.editScript);
+            return "Error: execption undenified";
         }
     }
 }
