@@ -80,7 +80,7 @@ namespace MAP
                     Result.Text = "Error: files are equal!";
                     return;
                 }
-                else
+                else if(result.status == AnalysisResults.AnalysisStatus.PatchError)
                 {
                     // !Error!
                     Result.Text = "Error: PatchError";
