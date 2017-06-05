@@ -9,6 +9,8 @@
     <Grid>
         <Button x:Name="testButton" Content="Test" HorizontalAlignment="Left" Margin="33,30,0,0" VerticalAlignment="Top" Width="75" Click="testButton_Click"/>
         <TextBox x:Name="textBox" HorizontalAlignment="Left" Height="23" Margin="15,73,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="120"/>
+        <Button x:Name="Test2" Content="Test2" HorizontalAlignment="Left" Margin="191,30,0,0" VerticalAlignment="Top" Width="75" Click="Test2_Click"/>
+        <TextBox x:Name="textBox1" HorizontalAlignment="Left" Height="23" Margin="168,73,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="120"/>
 
     </Grid>
 </Window>
