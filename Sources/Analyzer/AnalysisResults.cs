@@ -55,15 +55,14 @@ namespace MAP.Analysis
         public enum AnalysisStatus
         {
             Success,
-            FilesAreEqual
+            FilesAreEqual,
+            PatchError
         }
 
         public enum AnalysisResultsType
         {
             RawFilePatch,
-            DNLibPatch,
-            PatchError,
-            NoPatch
+            DNLibPatch
         }
     }
 }

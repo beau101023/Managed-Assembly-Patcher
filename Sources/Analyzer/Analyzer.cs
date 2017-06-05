@@ -40,7 +40,7 @@ namespace MAP.Analysis
             }
             else if(baseMod == modifiedMod)
             {
-                return new AnalysisResults(AnalysisResults.AnalysisStatus.FilesAreEqual, AnalysisResults.AnalysisResultsType.NoPatch);
+                return new AnalysisResults(AnalysisResults.AnalysisStatus.FilesAreEqual);
             }
 
             AnalysisResults results = new AnalysisResults(AnalysisResults.AnalysisStatus.Success, AnalysisResults.AnalysisResultsType.DNLibPatch);
