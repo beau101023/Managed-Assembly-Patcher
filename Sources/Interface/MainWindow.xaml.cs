@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Microsoft.Win32;
+using System.IO;
 
 namespace MAP
 {
@@ -70,10 +71,28 @@ namespace MAP
 
         private void makeResult_Click(object sender, RoutedEventArgs e)
         {
-            var result = Analyzer.RawAnalyze(baseFile, modFile);
-            var editScriptResult = result.ToString();
-            Result.Text = editScriptResult;
-            Analyzer.ApplyPatches(baseFile, editScriptResult);
+            AnalysisResults result = Analyzer.RawAnalyze(baseFile, modFile);
+
+            if(result.status != AnalysisResults.AnalysisStatus.Success)
+            {
+                if (result.status == AnalysisResults.AnalysisStatus.FilesAreEqual)
+                {
+                    Result.Text = result.ToString();
+                    return;
+                }
+                else
+                {
+                    // !Error!
+                    Result.Text = "Error: PatchError";
+                    return;
+                }
+            }
+
+            string moddedFile = System.IO.Path.GetFileNameWithoutExtension(baseFile) + "_modded" + System.IO.Path.GetExtension(baseFile);
+
+            File.Copy(baseFile, moddedFile);
+
+            Analyzer.ApplyPatches(moddedFile, result.editScript);
         }
     }
 }

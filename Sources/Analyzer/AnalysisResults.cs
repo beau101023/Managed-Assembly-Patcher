@@ -8,11 +8,11 @@ namespace MAP
 {
     class AnalysisResults
     {
-        AnalysisStatus status;
+        public AnalysisStatus status;
 
-        AnalysisResultsType resultType;
+        public AnalysisResultsType resultType;
 
-        string editScript = null;
+        public string editScript = null;
 
         public AnalysisResults(AnalysisStatus _status, AnalysisResultsType _resultType, string _editScript)
         {
