@@ -42,10 +42,15 @@ namespace MAP.Analysis
             switch(status)
             {
                 case AnalysisStatus.Success:
-                    strRep += "S";
+
+                    foreach(string s in editScript)
+                    {
+                        strRep += s;
+                    }
+
                     break;
                 case AnalysisStatus.FilesAreEqual:
-                    strRep += "E";
+                    strRep += "Files are equal!";
                     break;
             }
 

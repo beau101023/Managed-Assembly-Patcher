@@ -55,6 +55,11 @@ namespace MAP.Analysis
         /// </summary>
         public static AnalysisResults RawAnalyze(string baseFilePath, string modifiedFilePath)
         {
+            if(baseFilePath == modifiedFilePath)
+            {
+                return new AnalysisResults(AnalysisResults.AnalysisStatus.FilesAreEqual);
+            }
+
             string baseString = File.ReadAllText(baseFilePath);
             string modifiedString = File.ReadAllText(modifiedFilePath);
 
@@ -75,7 +80,7 @@ namespace MAP.Analysis
 
             string[] results = new string[patches.Count];
 
-            for(int i = 0; i <= patches.Count; i++)
+            for(int i = 0; i < patches.Count; i++)
             {
                 results[i] = patches[i].ToString();
             }
