@@ -83,7 +83,7 @@ namespace MAP
             return results;
         }
 
-        static public string ApplyPatches(string filePath, string editScript)
+        static public string[] ApplyPatches(string filePath, string editScript)
         {
             diff_match_patch patcher = new diff_match_patch();
 
@@ -91,12 +91,16 @@ namespace MAP
 
             Object[] patchedText = patcher.patch_apply(patches, File.ReadAllText(filePath));
 
-            return (patchedText[0] as string);
+            return patchedText as string[];
         }
 
-        static public void ApplyPatches(string filePath, List<Patch> editScript)
+        static public Object[] ApplyPatches(string filePath, List<Patch> editScript)
         {
+            diff_match_patch patcher = new diff_match_patch();
 
+            Object[] patchedText = patcher.patch_apply(editScript, File.ReadAllText(filePath));
+
+            return patchedText as string[];
         }
     }
 }

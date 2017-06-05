@@ -35,25 +35,6 @@ namespace MAP
             status = _status;
         }
 
-        public override string ToString()
-        {
-            string strRep = "";
-
-            switch(status)
-            {
-                case AnalysisStatus.Success:
-
-                    strRep += editScript;
-
-                    break;
-                case AnalysisStatus.FilesAreEqual:
-                    strRep += "Files are equal!";
-                    break;
-            }
-
-            return strRep;
-        }
-
         public enum AnalysisStatus
         {
             Success,
