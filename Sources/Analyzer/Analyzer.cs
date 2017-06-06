@@ -82,25 +82,5 @@ namespace MAP
 
             return results;
         }
-
-        static public string[] ApplyPatches(string filePath, string editScript)
-        {
-            diff_match_patch patcher = new diff_match_patch();
-
-            List<Patch> patches = patcher.patch_fromText(editScript);
-
-            Object[] patchedText = patcher.patch_apply(patches, File.ReadAllText(filePath));
-
-            return patchedText as string[];
-        }
-
-        static public Object[] ApplyPatches(string filePath, List<Patch> editScript)
-        {
-            diff_match_patch patcher = new diff_match_patch();
-
-            Object[] patchedText = patcher.patch_apply(editScript, File.ReadAllText(filePath));
-
-            return patchedText as string[];
-        }
     }
 }

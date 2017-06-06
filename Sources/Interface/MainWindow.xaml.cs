@@ -71,22 +71,22 @@ namespace MAP
 
         private void makeResult_Click(object sender, RoutedEventArgs e)
         {
-            Result.Text = makeAndgetResult();
+            Result.Text = makeAndGetResult();
         }
-        private string makeAndgetResult()
+        private string makeAndGetResult()
         {
             if (modFile == null && baseFile == null)
             {
-                return "Error: Missing base and, mod files";
+                return "Error: No files selected.";
             }
             else
             {
                 if(baseFile == null)
                 {
-                    return "Error: Missing base file";
+                    return "Error: No base file selected.";
                 } else if(modFile == null)
                 {
-                    return "Error: Missing mod file";
+                    return "Error: No mod file selected.";
                 } else if (!(modFile == null) && !(baseFile == null))
                 {
                     AnalysisResults result = Analyzer.RawAnalyze(baseFile, modFile);
@@ -108,11 +108,11 @@ namespace MAP
 
                     File.Copy(baseFile, moddedFile);
 
-                    Analyzer.ApplyPatches(moddedFile, result.editScript);
+                    PatchResults patchResult = Patcher.ApplyPatches(moddedFile, result.editScript);
                     return "Sucess!";
                 }
             }
-            return "Error: execption undenified";
+            return "Error: exception unidenified";
         }
     }
 }
