@@ -7,6 +7,17 @@ namespace MAP
 {
     public class Patcher
     {
+        /// <summary>
+        /// Takes lists of patches and combines them into a single list.
+        /// </summary>
+        static public List<Patch> CombinePatches(List<List<Patch>>)
+        {
+            // just shove the patches from all the lists into the first list and return that. Meh.
+        }
+
+        /// <summary>
+        /// Takes an edit script and applies it to the file specified by filePath.
+        /// </summary>
         static public PatchResults ApplyPatches(string filePath, string editScript)
         {
             diff_match_patch patcher = new diff_match_patch();
@@ -18,6 +29,9 @@ namespace MAP
             return new PatchResults((string)patcherResults[0], (bool[])patcherResults[1]);
         }
 
+        /// <summary>
+        /// Takes a list of patch objects and applies them to the file specified by filePath.
+        /// </summary>
         static public PatchResults ApplyPatches(string filePath, List<Patch> editScript)
         {
             diff_match_patch patcher = new diff_match_patch();
