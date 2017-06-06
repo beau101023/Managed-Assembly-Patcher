@@ -15,7 +15,7 @@ namespace MAP
 
             Object[] patcherResults = patcher.patch_apply(patches, File.ReadAllText(filePath));
 
-            return patcherResults;
+            return new PatchResults((string)patcherResults[0], (bool[])patcherResults[1]);
         }
 
         static public PatchResults ApplyPatches(string filePath, List<Patch> editScript)
@@ -24,7 +24,7 @@ namespace MAP
 
             Object[] patcherResults = patcher.patch_apply(editScript, File.ReadAllText(filePath));
 
-            return patcherResults;
+            return new PatchResults((string) patcherResults[0], (bool[]) patcherResults[1]);
         }
     }
 }

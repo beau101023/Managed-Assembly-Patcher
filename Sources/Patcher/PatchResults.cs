@@ -6,46 +6,20 @@ using System.Threading.Tasks;
 
 namespace MAP
 {
-    class PatchResults
+    public class PatchResults
     {
         public PatchStatus status;
 
-        public string patchedText;
+        public string patchedText = null;
 
-        public float patchSuccessPercentage;
+        public float patchSuccessPercentage = -1;
 
-        PatchResults(PatchStatus _status, string _patchedText, bool[] patchSuccessful)
+        public PatchResults(PatchStatus _status)
         {
-            status = _status;
-            patchedText = _patchedText;
-
-            int successes = 0;
-
-            foreach (bool b in patchSuccessful)
-            {
-                if (b == true)
-                {
-                    successes++;
-                }
-            }
-
-            patchSuccessPercentage = successes / patchSuccessful.Count();
-
-            if(patchSuccessPercentage == 1.00)
-            {
-                status = PatchStatus.Success;
-            }
-            else if(patchSuccessPercentage > 0.00 && patchSuccessPercentage < 1.00)
-            {
-                status = PatchStatus.PartialPatch;
-            }
-            else if(patchSuccessPercentage == 0.00)
-            {
-                status = PatchStatus.Failure;
-            }
+            status = PatchStatus.Failure;
         }
 
-        PatchResults(string _patchedText, bool[] patchResults)
+        public PatchResults(string _patchedText, bool[] patchResults)
         {
             patchedText = _patchedText;
 
