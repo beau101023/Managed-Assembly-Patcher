@@ -109,7 +109,16 @@ namespace MAP
                     File.Copy(baseFile, moddedFile);
 
                     PatchResults patchResult = Patcher.ApplyPatches(moddedFile, result.editScript);
-                    return "Sucess!";
+                    if (patchResult.status == PatchResults.PatchStatus.Success)
+                    {
+                        return "Success!";
+                    } else if(patchResult.status == PatchResults.PatchStatus.Failure)
+                    {
+                        return "Failure!";
+                    } else if(patchResult.status == PatchResults.PatchStatus.Error)
+                    {
+                        return "Error!";
+                    }
                 }
             }
             return "Error: exception unidenified";
