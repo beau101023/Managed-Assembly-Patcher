@@ -118,6 +118,9 @@ namespace MAP
                     } else if(patchResult.status == PatchResults.PatchStatus.Error)
                     {
                         return "Error!";
+                    } else if(patchResult.status == PatchResults.PatchStatus.PartialPatch)
+                    {
+                        return "Partial Patch!";
                     }
                 }
             }
