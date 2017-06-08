@@ -10,9 +10,38 @@ namespace MAP
         /// <summary>
         /// Takes lists of patches and combines them into a single list.
         /// </summary>
-        static public List<Patch> CombinePatches(List<List<Patch>>)
+        static public List<Patch> CombinePatches(List<List<Patch>> patchLists)
         {
-            // just shove the patches from all the lists into the first list and return that. Meh.
+            List<Patch> tempList = new List<Patch>();
+
+            List<int> toBeRemoved = new List<int>();
+
+            foreach(List<Patch> plist in patchLists)
+            {
+                tempList.AddRange(plist);
+            }
+
+            for (int i = 0; i < tempList.Count; i++)
+            {
+                // compare i against everything in front of it
+                for (int j = i + 1; j < tempList.Count; j++)
+                {
+                    if (tempList[i] == tempList[j])
+                    {
+                        // mark all entries equal to i for removal.
+                        toBeRemoved.Add(j);
+                    }
+                }
+            }
+            
+            foreach(int index in toBeRemoved)
+            {
+                tempList.RemoveAt(index);
+            }
+
+            List<Patch> resultList = tempList;
+
+            return tempList;
         }
 
         /// <summary>

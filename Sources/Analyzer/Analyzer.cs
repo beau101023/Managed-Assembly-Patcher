@@ -36,7 +36,7 @@ namespace MAP
                 //    }
                 //}
                 System.Diagnostics.Debug.WriteLine("Modules not equal, running subdiff");
-                // TODO: Implement subdiff algorithm to find differences in nested data.
+                // TODO: Implement algorithm to find differences in nested data.
             }
             else if(baseMod == modifiedMod)
             {
@@ -72,7 +72,7 @@ namespace MAP
         /// <summary>
         /// Generates a list of instructions to transform one baseBytes into targetBytes with the least modification.
         /// </summary>
-        static private string GenerateEditScript(string baseString, string targetString)
+        private static string GenerateEditScript(string baseString, string targetString)
         {
             diff_match_patch patcher = new diff_match_patch();
 

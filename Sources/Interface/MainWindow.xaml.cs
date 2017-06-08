@@ -37,8 +37,8 @@ namespace MAP
 
 
             // Set filter for file extension and default file extension 
-            dlg.DefaultExt = ".png";
-            dlg.Filter = "JPEG Files (*.jpeg)|*.jpeg|PNG Files (*.png)|*.png|JPG Files (*.jpg)|*.jpg|GIF Files (*.gif)|*.gif";
+            dlg.DefaultExt = ".exe";
+            dlg.Filter = "DLL Files (*.dll)|*.dll|EXE Files (*.exe)|*.exe|All Files|*.*";
 
 
             // Display OpenFileDialog by calling ShowDialog method 
@@ -104,11 +104,11 @@ namespace MAP
                         }
                     }
 
-                    string moddedFile = System.IO.Path.GetFileNameWithoutExtension(baseFile) + "_modded" + System.IO.Path.GetExtension(baseFile);
+                    string resultFile = baseFile.Remove(baseFile.Length - System.IO.Path.GetExtension(baseFile).Length) + "_patched" + System.IO.Path.GetExtension(baseFile);
 
-                    File.Copy(baseFile, moddedFile);
+                    File.Copy(baseFile, resultFile);
 
-                    PatchResults patchResult = Patcher.ApplyPatches(moddedFile, result.editScript);
+                    PatchResults patchResult = Patcher.ApplyPatches(resultFile, result.editScript);
                     if (patchResult.status == PatchResults.PatchStatus.Success)
                     {
                         return "Success!";
