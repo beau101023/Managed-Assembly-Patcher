@@ -14,6 +14,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Microsoft.Win32;
 using System.IO;
+using System.Collections.ObjectModel;
 
 namespace MAP
 {
@@ -25,11 +26,58 @@ namespace MAP
         static string baseFile = null;
         static string modFile = null;
 
+        ObservableCollection<FileInfo> _fileList = new ObservableCollection<FileInfo>();
+
         public MainWindow()
         {
             InitializeComponent();
+
+            listBox1.DisplayMemberPath = "Name";
+            listBox1.ItemsSource = _fileList;
+
+            Style itemContainerStyle = new Style(typeof(ListBoxItem));
+            itemContainerStyle.Setters.Add(new Setter(ListBoxItem.AllowDropProperty, true));
+            itemContainerStyle.Setters.Add(new EventSetter(ListBoxItem.PreviewMouseLeftButtonDownEvent, new MouseButtonEventHandler(s_PreviewMouseLeftButtonDown)));
+            itemContainerStyle.Setters.Add(new EventSetter(ListBoxItem.DropEvent, new DragEventHandler(listbox1_Drop)));
+            listBox1.ItemContainerStyle = itemContainerStyle;
         }
-        private string getFilePathFromDialog()
+
+        void s_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+
+            if (sender is ListBoxItem)
+            {
+                ListBoxItem draggedItem = sender as ListBoxItem;
+                DragDrop.DoDragDrop(draggedItem, draggedItem.DataContext, DragDropEffects.Move);
+                draggedItem.IsSelected = true;
+            }
+        }
+
+        void listbox1_Drop(object sender, DragEventArgs e)
+        {
+            FileInfo droppedData = e.Data.GetData(typeof(FileInfo)) as FileInfo;
+            FileInfo target = ((ListBoxItem)(sender)).DataContext as FileInfo;
+
+            int removedIdx = listBox1.Items.IndexOf(droppedData);
+            int targetIdx = listBox1.Items.IndexOf(target);
+
+            if (removedIdx < targetIdx)
+            {
+                _fileList.Insert(targetIdx + 1, droppedData);
+                _fileList.RemoveAt(removedIdx);
+            }
+            else
+            {
+                int remIdx = removedIdx + 1;
+                if (_fileList.Count + 1 > remIdx)
+                {
+                    _fileList.Insert(targetIdx, droppedData);
+                    _fileList.RemoveAt(remIdx);
+                }
+            }
+        }
+
+        private string GetFilePathFromDialog()
         {
             // Create OpenFileDialog 
             Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
@@ -53,78 +101,6 @@ namespace MAP
             }
             // Else
             return null;
-        }
-
-        private void testButton_Click(object sender, RoutedEventArgs e)
-        {
-            var filepath = getFilePathFromDialog();
-            file1Dir.Text = filepath;
-            baseFile = filepath;
-        }
-
-        private void Test2_Click(object sender, RoutedEventArgs e)
-        {
-            var filepath = getFilePathFromDialog();
-            file2Dir.Text = filepath;
-            modFile = filepath;
-        }
-
-        private void makeResult_Click(object sender, RoutedEventArgs e)
-        {
-            Result.Text = makeAndGetResult();
-        }
-        private string makeAndGetResult()
-        {
-            if (modFile == null && baseFile == null)
-            {
-                return "Error: No files selected.";
-            }
-            else
-            {
-                if(baseFile == null)
-                {
-                    return "Error: No base file selected.";
-                } else if(modFile == null)
-                {
-                    return "Error: No mod file selected.";
-                } else if (!(modFile == null) && !(baseFile == null))
-                {
-                    AnalysisResults result = Analyzer.RawAnalyze(baseFile, modFile);
-
-                    if (result.status != AnalysisResults.AnalysisStatus.Success)
-                    {
-                        if (result.status == AnalysisResults.AnalysisStatus.FilesAreEqual)
-                        {
-                            return "Error: files are equal!";
-                        }
-                        else if (result.status == AnalysisResults.AnalysisStatus.PatchError)
-                        {
-                            // !Error!
-                            return "Error: PatchError";
-                        }
-                    }
-
-                    string resultFile = baseFile.Remove(baseFile.Length - System.IO.Path.GetExtension(baseFile).Length) + "_patched" + System.IO.Path.GetExtension(baseFile);
-
-                    File.Copy(baseFile, resultFile);
-
-                    PatchResults patchResult = Patcher.ApplyPatches(resultFile, result.editScript);
-                    if (patchResult.status == PatchResults.PatchStatus.Success)
-                    {
-                        return "Success!";
-                    } else if(patchResult.status == PatchResults.PatchStatus.Failure)
-                    {
-                        return "Failure!";
-                    } else if(patchResult.status == PatchResults.PatchStatus.Error)
-                    {
-                        return "Error!";
-                    } else if(patchResult.status == PatchResults.PatchStatus.PartialPatch)
-                    {
-                        return "Partial Patch!";
-                    }
-                }
-            }
-            return "Error: exception unidenified";
         }
     }
 }
