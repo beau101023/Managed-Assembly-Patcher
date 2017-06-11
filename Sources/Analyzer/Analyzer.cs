@@ -55,19 +55,40 @@ namespace MAP
         /// </summary>
         public static AnalysisResults RawAnalyze(string baseFilePath, string modifiedFilePath)
         {
-            if(baseFilePath == modifiedFilePath)
+            if (baseFilePath == modifiedFilePath)
             {
-                return new AnalysisResults(AnalysisResults.AnalysisStatus.FilesAreEqual);
+                return new AnalysisResults(AnalysisResults.AnalysisStatus.FilesSamePath);
             }
 
             string baseString = File.ReadAllText(baseFilePath);
             string modifiedString = File.ReadAllText(modifiedFilePath);
 
+            if (baseString == modifiedString)
+            {
+                return new AnalysisResults(AnalysisResults.AnalysisStatus.FilesAreEqual);
+            }
+
+            /*string tempString0 = "";
+            string tempString1 = "";
+
+            foreach (char c in baseString)
+            {
+                tempString0 += c + " ";
+            }
+            tempString0.Remove(tempString0.Length - 1);
+
+            foreach (char c in modifiedString)
+            {
+                tempString1 += c + " ";
+            }
+            tempString1.Remove(tempString1.Length - 1);
+
+            string editScript = GenerateEditScript(tempString0, tempString1);*/
+
             string editScript = GenerateEditScript(baseString, modifiedString);
 
             return new AnalysisResults(AnalysisResults.AnalysisStatus.Success, AnalysisResults.AnalysisResultsType.RawFilePatch, editScript);
         }
-
 
         /// <summary>
         /// Generates a list of instructions to transform one baseBytes into targetBytes with the least modification.

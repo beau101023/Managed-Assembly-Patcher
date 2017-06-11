@@ -26,58 +26,19 @@ namespace MAP
         static string baseFile = null;
         static string modFile = null;
 
-        ObservableCollection<FileInfo> _fileList = new ObservableCollection<FileInfo>();
+        static string baseFile1 = null;
+
+        ObservableCollection<FileInfo> fileList = new ObservableCollection<FileInfo>();
 
         public MainWindow()
         {
             InitializeComponent();
 
-            listBox1.DisplayMemberPath = "Name";
-            listBox1.ItemsSource = _fileList;
-
-            Style itemContainerStyle = new Style(typeof(ListBoxItem));
-            itemContainerStyle.Setters.Add(new Setter(ListBoxItem.AllowDropProperty, true));
-            itemContainerStyle.Setters.Add(new EventSetter(ListBoxItem.PreviewMouseLeftButtonDownEvent, new MouseButtonEventHandler(s_PreviewMouseLeftButtonDown)));
-            itemContainerStyle.Setters.Add(new EventSetter(ListBoxItem.DropEvent, new DragEventHandler(listbox1_Drop)));
-            listBox1.ItemContainerStyle = itemContainerStyle;
+            ModList.DisplayMemberPath = "Name";
+            ModList.ItemsSource = fileList;
         }
 
-        void s_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-
-            if (sender is ListBoxItem)
-            {
-                ListBoxItem draggedItem = sender as ListBoxItem;
-                DragDrop.DoDragDrop(draggedItem, draggedItem.DataContext, DragDropEffects.Move);
-                draggedItem.IsSelected = true;
-            }
-        }
-
-        void listbox1_Drop(object sender, DragEventArgs e)
-        {
-            FileInfo droppedData = e.Data.GetData(typeof(FileInfo)) as FileInfo;
-            FileInfo target = ((ListBoxItem)(sender)).DataContext as FileInfo;
-
-            int removedIdx = listBox1.Items.IndexOf(droppedData);
-            int targetIdx = listBox1.Items.IndexOf(target);
-
-            if (removedIdx < targetIdx)
-            {
-                _fileList.Insert(targetIdx + 1, droppedData);
-                _fileList.RemoveAt(removedIdx);
-            }
-            else
-            {
-                int remIdx = removedIdx + 1;
-                if (_fileList.Count + 1 > remIdx)
-                {
-                    _fileList.Insert(targetIdx, droppedData);
-                    _fileList.RemoveAt(remIdx);
-                }
-            }
-        }
-
-        private string GetFilePathFromDialog()
+        private string GetFilePathFromDialog(string defaultExt, string filter)
         {
             // Create OpenFileDialog 
             Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
@@ -85,8 +46,8 @@ namespace MAP
 
 
             // Set filter for file extension and default file extension 
-            dlg.DefaultExt = ".exe";
-            dlg.Filter = "DLL Files (*.dll)|*.dll|EXE Files (*.exe)|*.exe|All Files|*.*";
+            dlg.DefaultExt = defaultExt;
+            dlg.Filter = filter;
 
 
             // Display OpenFileDialog by calling ShowDialog method 
@@ -101,6 +62,219 @@ namespace MAP
             }
             // Else
             return null;
+        }
+
+        private string CreateFileFromDialog(string defaultExt, string filter)
+        {
+            // Create OpenFileDialog 
+            Microsoft.Win32.SaveFileDialog dlg = new Microsoft.Win32.SaveFileDialog();
+
+
+
+            // Set filter for file extension and default file extension 
+            dlg.DefaultExt = defaultExt;
+            dlg.Filter = filter;
+
+
+            // Display OpenFileDialog by calling ShowDialog method 
+            Nullable<bool> result = dlg.ShowDialog();
+
+            // Get the selected file name and display in a TextBox 
+            if (result == true)
+            {
+                // Open document 
+                string filename = dlg.FileName;
+                return filename;
+            }
+            // Else
+            return null;
+        }
+
+        private void BaseSelect_Click(object sender, RoutedEventArgs e)
+        {
+            string temp = GetFilePathFromDialog(".exe", "EXE Files (*.exe)|*.exe|DLL Files (*.dll)|*.dll|All Files|*.*");
+
+            if(temp == null)
+            {
+                baseTextBox.Content = "Select valid file";
+                return;
+            }
+            else
+            {
+                baseFile = temp;
+                baseTextBox.Content = "";
+            }
+        }
+
+        private void ModSelect_Click(object sender, RoutedEventArgs e)
+        {
+            string temp = GetFilePathFromDialog(".exe", "EXE Files (*.exe)|*.exe|DLL Files (*.dll)|*.dll|All Files|*.*");
+
+            if (temp == null)
+            {
+                modTextBox.Content = "Select valid file";
+                return;
+            }
+            else
+            {
+                modFile = temp;
+                modTextBox.Content = "";
+            }
+        }
+
+        private void CreateButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (baseFile == null || modFile == null)
+            {
+                createTextBox.Content = "Please choose a valid file for base and modified files.";
+                return;
+            }
+
+            if(baseFile == modFile)
+            {
+                createTextBox.Content = "Please select two different files.";
+                return;
+            }
+
+            if (ModeSelector.SelectedItem == null)
+            {
+                createTextBox.Content = "Please select an analysis mode.";
+                return;
+            }
+
+            if (ModeSelector.SelectedItem == RawMode)
+            {
+                string temp = CreateFileFromDialog(".diffmod", "Diffmod Files (*.diffmod)|*.diffmod|All Files|*.*");
+
+                if (temp == null)
+                {
+                    createTextBox.Content = "Select valid file";
+                    return;
+                }
+
+                AnalysisResults r = Analyzer.RawAnalyze(baseFile, modFile);
+
+                if (r.status != AnalysisResults.AnalysisStatus.Success)
+                {
+                    if(r.status == AnalysisResults.AnalysisStatus.FilesAreEqual)
+                    {
+                        createTextBox.Content = "The files you have selected appear to have the same contents.";
+                    }
+                    if (r.status == AnalysisResults.AnalysisStatus.FilesSamePath)
+                    {
+                        createTextBox.Content = "Please select two different files.";
+                    }
+                    if (r.status == AnalysisResults.AnalysisStatus.PatchError)
+                    {
+                        createTextBox.Content = "Something went horribly wrong, please try again.";
+                    }
+                    return;
+                }
+
+                createTextBox.Content = "Success! Diffmod can be found at " + temp;
+
+                File.WriteAllText(temp, r.editScript);
+            }
+        }
+
+        private void AddDiffmod_Click(object sender, RoutedEventArgs e)
+        {
+            string temp = GetFilePathFromDialog(".diffmod", "Diffmod Files (*.diffmod)|*.diffmod|All Files (*.*)|*.*");
+
+            if(temp == null)
+            {
+                return;
+            }
+
+            FileInfo f = new FileInfo(temp);
+
+            fileList.Add(f);
+        }
+
+        private void RemoveDiffmod_Click(object sender, RoutedEventArgs e)
+        {
+            if (ModList.SelectedItem != null)
+            {
+                fileList.RemoveAt(ModList.SelectedIndex);
+            }
+        }
+
+        private void SelectBaseFile_Click(object sender, RoutedEventArgs e)
+        {
+            baseFile1 = GetFilePathFromDialog(".exe", "EXE Files (*.exe)|*.exe|DLL Files (*.dll)|*.dll|All Files|*.*");
+        }
+
+        private void MoveItemUp_Click(object sender, RoutedEventArgs e)
+        {
+            if (ModList.SelectedIndex != -1)
+            {
+                int oldIndex = ModList.SelectedIndex;
+
+                FileInfo f = fileList[oldIndex];
+
+                fileList.RemoveAt(ModList.SelectedIndex);
+
+                fileList.Insert(oldIndex - 1, f);
+            }
+        }
+
+        private void MoveItemDown_Click(object sender, RoutedEventArgs e)
+        {
+            if (ModList.SelectedIndex != -1)
+            {
+                int oldIndex = ModList.SelectedIndex;
+
+                FileInfo f = fileList[oldIndex];
+
+                fileList.RemoveAt(ModList.SelectedIndex);
+
+                fileList.Insert(oldIndex + 1, f);
+            }
+        }
+
+        private void ExportModdedFile_Click(object sender, RoutedEventArgs e)
+        {
+            if(baseFile1 == null)
+            {
+                return;
+            }
+            if(fileList.Count == 0)
+            {
+                return;
+            }
+            if(fileList.Count == 1)
+            {
+                string exportFile = CreateFileFromDialog(".exe", "EXE Files (*.exe)|*.exe|DLL Files (*.dll)|*.dll|All Files|*.*");
+
+                if(exportFile == null)
+                {
+                    return;
+                }
+
+                string modFileContent = File.ReadAllText(fileList[0].FullName);
+
+                PatchResults p = Patcher.ApplyPatches(baseFile1, modFileContent);
+
+                if(p.status == PatchResults.PatchStatus.Error)
+                {
+                    ErrorDisplay.Content = "Something is really wrong,&#xA;Please Contact the Developer";
+                }
+                else if(p.status == PatchResults.PatchStatus.Failure)
+                {
+                    ErrorDisplay.Content = "Patch failure.&#xA;The current patch files were probably not intended to modify the selected base file.";
+                }
+                else if(p.status == PatchResults.PatchStatus.PartialPatch)
+                {
+                    ErrorDisplay.Content = "File only partially patched, may cause unexpected behaviour.";
+                }
+                else if(p.status == PatchResults.PatchStatus.Success)
+                {
+                    File.WriteAllText(exportFile, p.patchedText);
+                    ErrorDisplay.Content = "Patched file can be found at &#xA;" + exportFile;
+                }
+            }
+
+            return;
         }
     }
 }

@@ -1768,7 +1768,7 @@ namespace DiffMatchPatch {
     public List<Patch> patch_make(string text1, string text2) {
       // Check for null inputs not needed since null can't be passed in C#.
       // No diffs provided, comAdde our own.
-      List<Diff> diffs = diff_main(text1, text2, true);
+      List<Diff> diffs = diff_main(text1, text2, false);
       if (diffs.Count > 2) {
         diff_cleanupSemantic(diffs);
         diff_cleanupEfficiency(diffs);

@@ -5,34 +5,37 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MAP"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
+        Title="Managed Assembly Patcher" Height="350" Width="525">
     <Grid>
         <TabControl x:Name="tabControl" HorizontalAlignment="Left" Height="319" VerticalAlignment="Top" Width="517">
             <TabItem Header="Create Diffmod">
                 <Grid Background="#FFE5E5E5">
-                    <Button x:Name="BaseSelect" Content="Select Base File" Margin="81,40,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="117"/>
-                    <Button x:Name="ModSelect" Content="Select Modified File" Margin="0,40,79,0" VerticalAlignment="Top" HorizontalAlignment="Right" Width="117"/>
-                    <TextBox x:Name="baseTextBox" HorizontalAlignment="Left" Height="23" Margin="81,65,0,0" TextWrapping="Wrap" Text="Selected File" VerticalAlignment="Top" Width="117" RenderTransformOrigin="0.872,0.565"/>
-                    <TextBox x:Name="modTextBox1" HorizontalAlignment="Left" Height="23" Margin="315,65,0,0" TextWrapping="Wrap" Text="Selected File" VerticalAlignment="Top" Width="117"/>
-                    <Button x:Name="CreateButton" Content="Create DiffMod File" HorizontalAlignment="Left" Margin="198,115,0,0" VerticalAlignment="Top" Width="117"/>
-                    <Button x:Name="OutputSelect" Content="Select Output Directory" HorizontalAlignment="Left" Margin="191,170,0,0" VerticalAlignment="Top" Width="131"/>
-                    <TextBox x:Name="outputTextBox" HorizontalAlignment="Left" Height="23" Margin="191,195,0,0" TextWrapping="Wrap" Text="Selected Output" VerticalAlignment="Top" Width="131"/>
+                    <Image x:Name="___Managed_Assembly_Patcher_component_modloaderBG_png" Source="/Managed Assembly Patcher;component/modloaderBG.png" Stretch="Fill"/>
+                    <Button x:Name="BaseSelect" Content="Select Base File" Margin="81,40,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="117" Click="BaseSelect_Click"/>
+                    <Button x:Name="ModSelect" Content="Select Modified File" Margin="0,40,79,0" VerticalAlignment="Top" HorizontalAlignment="Right" Width="117" Click="ModSelect_Click"/>
+                    <Button x:Name="CreateButton" Content="Create DiffMod File" HorizontalAlignment="Left" Margin="198,115,0,0" VerticalAlignment="Top" Width="117" Click="CreateButton_Click"/>
+                    <Label x:Name="baseTextBox" Content="" HorizontalAlignment="Left" Margin="81,65,0,0" VerticalAlignment="Top" BorderThickness="0"/>
+                    <Label x:Name="modTextBox" Content="" HorizontalAlignment="Left" Margin="315,65,0,0" VerticalAlignment="Top"/>
+                    <Label x:Name="createTextBox" Content="" HorizontalAlignment="Center" Margin="81,140,79,0" VerticalAlignment="Top" Width="351"/>
+                    <ComboBox x:Name="ModeSelector" Text="Choose Mode" HorizontalAlignment="Left" IsEditable="True" IsReadOnly="True" Focusable="False" Margin="198,166,0,0" VerticalAlignment="Top" Width="117" Height="24" Cursor="Arrow">
+                        <!--<ComboBoxItem x:Name="dnMode" Content="DN Mode"/>-->
+                        <ComboBoxItem x:Name="RawMode" Content="Raw Mode"/>
+
+                    </ComboBox>
                 </Grid>
             </TabItem>
             <TabItem Header="Apply Mods To File">
                 <Grid Background="#FFE5E5E5">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="122*"/>
-                        <ColumnDefinition Width="389*"/>
-                    </Grid.ColumnDefinitions>
-                    <ListBox x:Name="listBox1" Grid.Column="1" HorizontalAlignment="Left" Height="100" Margin="195,50,0,0" VerticalAlignment="Top" Width="100" AllowDrop="True"/>
-                    <Button x:Name="AddDiffmod" Content="Add Diffmod" Grid.Column="1" HorizontalAlignment="Left" Margin="195,30,0,0" VerticalAlignment="Top" Width="100"/>
-                    <Button x:Name="RemoveDiffmod" Content="Remove Diffmod" Grid.Column="1" HorizontalAlignment="Left" Margin="195,150,0,0" VerticalAlignment="Top" Width="100"/>
-                    <Button x:Name="SelectFileForModding" Grid.ColumnSpan="2" Content="Select Base File" HorizontalAlignment="Left" Margin="82,50,0,0" VerticalAlignment="Top" Width="105"/>
-                    <TextBox x:Name="ToModBox" HorizontalAlignment="Left" Height="23" Margin="82,75,0,0" TextWrapping="Wrap" Text="Selected File" VerticalAlignment="Top" Width="105" Grid.ColumnSpan="2"/>
-                    <Button x:Name="ApplyMods" Grid.ColumnSpan="2" Content="Apply Mods" HorizontalAlignment="Left" Margin="82,190,0,0" VerticalAlignment="Top" Width="105"/>
-                    <Button x:Name="SelectDestinationFile" Content="Select Destination" HorizontalAlignment="Left" Margin="82,103,0,0" VerticalAlignment="Top" Width="105" Grid.ColumnSpan="2"/>
-                    <TextBox x:Name="DestinationBox" Grid.ColumnSpan="2" HorizontalAlignment="Left" Height="23" Margin="82,128,0,0" TextWrapping="Wrap" Text="Destination" VerticalAlignment="Top" Width="105"/>
+                    <Image x:Name="Managed_Assembly_Patcher_component_modloaderBG_png" Source="/Managed Assembly Patcher;component/modloaderBG.png" Stretch="Fill"/>
+
+                    <ListBox x:Name="ModList" HorizontalAlignment="Left" Height="100" Margin="297,50,0,0" VerticalAlignment="Top" Width="100" AllowDrop="True"/>
+                    <Button x:Name="AddDiffmod" Content="Add Diffmod" HorizontalAlignment="Left" Margin="297,30,0,0" VerticalAlignment="Top" Width="100" Click="AddDiffmod_Click"/>
+                    <Button x:Name="RemoveDiffmod" Content="Remove Diffmod" HorizontalAlignment="Left" Margin="297,150,0,0" VerticalAlignment="Top" Width="100" Click="RemoveDiffmod_Click"/>
+                    <Button x:Name="SelectBaseFile" Content="Select Base File" HorizontalAlignment="Left" Margin="112,30,0,0" VerticalAlignment="Top" Width="110" Click="SelectBaseFile_Click"/>
+                    <Button x:Name="ExportModdedFile" Content="Export Modded File" HorizontalAlignment="Left" Margin="112,150,0,0" VerticalAlignment="Top" Width="110" Click="ExportModdedFile_Click"/>
+                    <Button x:Name="MoveItemDown" Content="-" HorizontalAlignment="Left" Margin="277,130,0,0" VerticalAlignment="Top" Width="20" Click="MoveItemDown_Click"/>
+                    <Button x:Name="MoveItemUp" Content="+" HorizontalAlignment="Left" Margin="277,110,0,0" VerticalAlignment="Top" Width="20" Click="MoveItemUp_Click"/>
+                    <Label x:Name="ErrorDisplay" Content="" HorizontalAlignment="Left" Margin="112,170,0,0" VerticalAlignment="Top" Foreground="White"/>
                 </Grid>
             </TabItem>
         </TabControl>

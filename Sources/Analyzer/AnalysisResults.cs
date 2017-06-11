@@ -39,6 +39,7 @@ namespace MAP
         {
             Success,
             FilesAreEqual,
+            FilesSamePath,
             PatchError
         }
 
