@@ -26,7 +26,7 @@ namespace MAP
                 // compare i against everything in front of it
                 for (int j = i + 1; j < tempList.Count; j++)
                 {
-                    if (tempList[i] == tempList[j])
+                    if (tempList[i] == tempList[j] && !toBeRemoved.Contains(j))
                     {
                         // mark all entries equal to i for removal.
                         toBeRemoved.Add(j);
@@ -64,6 +64,10 @@ namespace MAP
         static public PatchResults ApplyPatches(string filePath, List<Patch> editScript)
         {
             diff_match_patch patcher = new diff_match_patch();
+
+            patcher.Patch_DeleteThreshold = 0f;
+
+            patcher.Match_Threshold = 0f;
 
             Object[] patcherResults = patcher.patch_apply(editScript, File.ReadAllText(filePath));
 

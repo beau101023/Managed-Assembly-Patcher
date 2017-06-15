@@ -68,22 +68,26 @@ namespace MAP
                 return new AnalysisResults(AnalysisResults.AnalysisStatus.FilesAreEqual);
             }
 
-            /*string tempString0 = "";
-            string tempString1 = "";
+            /*
+            StringBuilder baseSB = new StringBuilder(baseString.Length * 2);
+            StringBuilder modSB = new StringBuilder(modifiedString.Length * 2);
 
             foreach (char c in baseString)
             {
-                tempString0 += c + " ";
+                baseSB.Append(c);
+                baseSB.Append(' ');
             }
-            tempString0.Remove(tempString0.Length - 1);
+            baseSB.Remove(baseSB.Length - 1, 1);
 
             foreach (char c in modifiedString)
             {
-                tempString1 += c + " ";
+                modSB.Append(c);
+                modSB.Append(' ');
             }
-            tempString1.Remove(tempString1.Length - 1);
+            modSB.Remove(modSB.Length - 1, 1);
 
-            string editScript = GenerateEditScript(tempString0, tempString1);*/
+            string editScript = GenerateEditScript(baseSB.ToString(), modSB.ToString());
+            */
 
             string editScript = GenerateEditScript(baseString, modifiedString);
 
@@ -91,11 +95,13 @@ namespace MAP
         }
 
         /// <summary>
-        /// Generates a list of instructions to transform one baseBytes into targetBytes with the least modification.
+        /// Generates a list of instructions to transform one string into another with the least modification.
         /// </summary>
         private static string GenerateEditScript(string baseString, string targetString)
         {
             diff_match_patch patcher = new diff_match_patch();
+
+            patcher.Diff_Timeout = 0;
 
             List<Patch> patches = patcher.patch_make(baseString, targetString);
 

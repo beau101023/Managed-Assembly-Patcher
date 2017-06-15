@@ -1768,7 +1768,7 @@ namespace DiffMatchPatch {
     public List<Patch> patch_make(string text1, string text2) {
       // Check for null inputs not needed since null can't be passed in C#.
       // No diffs provided, comAdde our own.
-      List<Diff> diffs = diff_main(text1, text2, false);
+      List<Diff> diffs = diff_main(text1, text2, true, DateTime.MaxValue);
       if (diffs.Count > 2) {
         diff_cleanupSemantic(diffs);
         diff_cleanupEfficiency(diffs);
@@ -2290,13 +2290,16 @@ namespace DiffMatchPatch {
      * @param str The string to escape.
      * @return The escaped string.
      */
-    public static string unescapeForEncodeUriCompatability(string str) {
-      return str.Replace("%21", "!").Replace("%7e", "~")
-          .Replace("%27", "'").Replace("%28", "(").Replace("%29", ")")
-          .Replace("%3b", ";").Replace("%2f", "/").Replace("%3f", "?")
-          .Replace("%3a", ":").Replace("%40", "@").Replace("%26", "&")
-          .Replace("%3d", "=").Replace("%2b", "+").Replace("%24", "$")
-          .Replace("%2c", ",").Replace("%23", "#");
+    public static string unescapeForEncodeUriCompatability(string str)
+    {
+        StringBuilder sb = new StringBuilder(str, str.Length);
+
+        return sb.Replace("%21", "!").Replace("%7e", "~")
+            .Replace("%27", "'").Replace("%28", "(").Replace("%29", ")")
+            .Replace("%3b", ";").Replace("%2f", "/").Replace("%3f", "?")
+            .Replace("%3a", ":").Replace("%40", "@").Replace("%26", "&")
+            .Replace("%3d", "=").Replace("%2b", "+").Replace("%24", "$")
+            .Replace("%2c", ",").Replace("%23", "#").ToString();
     }
   }
 }
