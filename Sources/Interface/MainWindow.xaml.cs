@@ -1,20 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using Microsoft.Win32;
 using System.IO;
 using System.Collections.ObjectModel;
+using DiffMatchPatch;
 
 namespace MAP
 {
@@ -175,6 +165,11 @@ namespace MAP
 
                 File.WriteAllText(temp, r.editScript);
             }
+
+            if(ModeSelector.SelectedItem == DNMode)
+            {
+                
+            }
         }
 
         private void AddDiffmod_Click(object sender, RoutedEventArgs e)
@@ -257,11 +252,11 @@ namespace MAP
 
                 if(p.status == PatchResults.PatchStatus.Error)
                 {
-                    ErrorDisplay.Content = "Something is really wrong,&#xA;Please Contact the Developer";
+                    ErrorDisplay.Content = "Something is really wrong, please Contact the Developer";
                 }
                 else if(p.status == PatchResults.PatchStatus.Failure)
                 {
-                    ErrorDisplay.Content = "Patch failure.&#xA;The current patch files were probably not intended to modify the selected base file.";
+                    ErrorDisplay.Content = "Patch failure. The current patch files were probably not intended to modify the selected base file.";
                 }
                 else if(p.status == PatchResults.PatchStatus.PartialPatch)
                 {
@@ -270,10 +265,49 @@ namespace MAP
                 else if(p.status == PatchResults.PatchStatus.Success)
                 {
                     File.WriteAllText(exportFile, p.patchedText);
-                    ErrorDisplay.Content = "Patched file can be found at &#xA;" + exportFile;
+                    ErrorDisplay.Content = "Patched file can be found at" + exportFile;
                 }
             }
+            if(fileList.Count > 1)
+            {
+                string exportFile = CreateFileFromDialog(".exe", "EXE Files (*.exe)|*.exe|DLL Files (*.dll)|*.dll|All Files|*.*");
 
+                if (exportFile == null)
+                {
+                    return;
+                }
+
+                List<FileInfo> modFiles = new List<FileInfo>(fileList);
+
+                List<List<Patch>> patchLists = new List<List<Patch>>();
+
+                foreach(FileInfo f in modFiles)
+                {
+                    patchLists.Add(Patcher.GetPatchesFromString(File.ReadAllText(f.FullName)));
+                }
+
+                List<Patch> patches = Patcher.CombinePatches(patchLists);
+
+                PatchResults p = Patcher.ApplyPatches(baseFile1, patches);
+
+                if (p.status == PatchResults.PatchStatus.Error)
+                {
+                    ErrorDisplay.Content = "Something is really wrong, please Contact the Developer";
+                }
+                else if (p.status == PatchResults.PatchStatus.Failure)
+                {
+                    ErrorDisplay.Content = "Patch failure. The current patch files were probably not intended to modify the selected base file.";
+                }
+                else if (p.status == PatchResults.PatchStatus.PartialPatch)
+                {
+                    ErrorDisplay.Content = "File only partially patched, may cause unexpected behaviour.";
+                }
+                else if (p.status == PatchResults.PatchStatus.Success)
+                {
+                    File.WriteAllText(exportFile, p.patchedText);
+                    ErrorDisplay.Content = "Patched file can be found at" + exportFile;
+                }
+            }
             return;
         }
     }

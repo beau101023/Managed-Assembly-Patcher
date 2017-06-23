@@ -18,7 +18,7 @@
                     <Label x:Name="modTextBox" Content="" HorizontalAlignment="Left" Margin="315,65,0,0" VerticalAlignment="Top"/>
                     <Label x:Name="createTextBox" Content="" HorizontalAlignment="Center" Margin="81,140,79,0" VerticalAlignment="Top" Width="351"/>
                     <ComboBox x:Name="ModeSelector" Text="Choose Mode" HorizontalAlignment="Left" IsEditable="True" IsReadOnly="True" Focusable="False" Margin="198,166,0,0" VerticalAlignment="Top" Width="117" Height="24" Cursor="Arrow">
-                        <!--<ComboBoxItem x:Name="dnMode" Content="DN Mode"/>-->
+                        <ComboBoxItem x:Name="DNMode" Content="DN Mode"/>
                         <ComboBoxItem x:Name="RawMode" Content="Raw Mode"/>
 
                     </ComboBox>

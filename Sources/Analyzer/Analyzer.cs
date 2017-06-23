@@ -26,21 +26,17 @@ namespace MAP
             ModuleDefMD baseMod = ModuleDefMD.Load(baseFilePath);
             ModuleDefMD modifiedMod = ModuleDefMD.Load(modifiedFilePath);
 
-            if (baseMod != modifiedMod)
-            {
-                //for (int currenttype = 0; currenttype <= basemod.types.count; currenttype++)
-                //{
-                //    if (basemod.types[currenttype] != modifiedmod.types[currenttype])
-                //    {
-
-                //    }
-                //}
-                System.Diagnostics.Debug.WriteLine("Modules not equal, running subdiff");
-                // TODO: Implement algorithm to find differences in nested data.
-            }
-            else if(baseMod == modifiedMod)
+            if (baseMod == modifiedMod)
             {
                 return new AnalysisResults(AnalysisResults.AnalysisStatus.FilesAreEqual);
+            }
+            // if a type is not equal, check the data in it to see what isn't equal, continue doing this for all nested data
+            for (int currenttype = 0; currenttype <= baseMod.Types.Count; currenttype++)
+            {
+                if (baseMod.Types[currenttype] != modifiedMod.Types[currenttype])
+                {
+                    for(baseMod.Types[currenttype].)
+                }
             }
 
             AnalysisResults results = new AnalysisResults(AnalysisResults.AnalysisStatus.Success, AnalysisResults.AnalysisResultsType.DNLibPatch);
@@ -68,27 +64,6 @@ namespace MAP
                 return new AnalysisResults(AnalysisResults.AnalysisStatus.FilesAreEqual);
             }
 
-            /*
-            StringBuilder baseSB = new StringBuilder(baseString.Length * 2);
-            StringBuilder modSB = new StringBuilder(modifiedString.Length * 2);
-
-            foreach (char c in baseString)
-            {
-                baseSB.Append(c);
-                baseSB.Append(' ');
-            }
-            baseSB.Remove(baseSB.Length - 1, 1);
-
-            foreach (char c in modifiedString)
-            {
-                modSB.Append(c);
-                modSB.Append(' ');
-            }
-            modSB.Remove(modSB.Length - 1, 1);
-
-            string editScript = GenerateEditScript(baseSB.ToString(), modSB.ToString());
-            */
-
             string editScript = GenerateEditScript(baseString, modifiedString);
 
             return new AnalysisResults(AnalysisResults.AnalysisStatus.Success, AnalysisResults.AnalysisResultsType.RawFilePatch, editScript);
@@ -99,13 +74,22 @@ namespace MAP
         /// </summary>
         private static string GenerateEditScript(string baseString, string targetString)
         {
-            diff_match_patch patcher = new diff_match_patch();
+            diff_match_patch engine = new diff_match_patch();
 
-            patcher.Diff_Timeout = 0;
+            engine.Diff_Timeout = 0;
 
-            List<Patch> patches = patcher.patch_make(baseString, targetString);
+            List<Diff> diffs = engine.diff_main(baseString, targetString, false);
 
-            string results = patcher.patch_toText(patches);
+            //List<Patch> patches = engine.patch_make(baseString, diffs);
+
+            /*
+            Future: Develop custom patcher using generated diffs
+            reduce file size
+            make patcher more rigid and less prone to error
+            make patch application *much* faster
+            */
+
+            string results = engine.patch_toText(patches);
 
             return results;
         }

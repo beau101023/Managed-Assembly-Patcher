@@ -51,6 +51,10 @@ namespace MAP
         {
             diff_match_patch patcher = new diff_match_patch();
 
+            patcher.Patch_DeleteThreshold = 0f;
+
+            patcher.Match_Threshold = 0f;
+
             List<Patch> patches = patcher.patch_fromText(editScript);
 
             Object[] patcherResults = patcher.patch_apply(patches, File.ReadAllText(filePath));
@@ -69,9 +73,18 @@ namespace MAP
 
             patcher.Match_Threshold = 0f;
 
+            patcher.Match_Distance = 0;
+
             Object[] patcherResults = patcher.patch_apply(editScript, File.ReadAllText(filePath));
 
             return new PatchResults((string) patcherResults[0], (bool[]) patcherResults[1]);
+        }
+
+        static public List<Patch> GetPatchesFromString(string patchString)
+        {
+            diff_match_patch patcher = new diff_match_patch();
+
+            return patcher.patch_fromText(patchString);
         }
     }
 }
