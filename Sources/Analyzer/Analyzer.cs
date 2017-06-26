@@ -82,14 +82,9 @@ namespace MAP
 
             //List<Patch> patches = engine.patch_make(baseString, diffs);
 
-            /*
-            Future: Develop custom patcher using generated diffs
-            reduce file size
-            make patcher more rigid and less prone to error
-            make patch application *much* faster
-            */
+            //string results = engine.patch_toText(patches);
 
-            string results = engine.patch_toText(patches);
+            string results = Patcher.PatchMake(diffs);
 
             return results;
         }

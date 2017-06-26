@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using DiffMatchPatch;
 using System.IO;
+using System.Text;
 
 namespace MAP
 {
@@ -85,6 +86,57 @@ namespace MAP
             diff_match_patch patcher = new diff_match_patch();
 
             return patcher.patch_fromText(patchString);
+        }
+
+        static public string PatchMake(List<Diff> diffs)
+        {
+            StringBuilder sb = new StringBuilder();
+
+            // what character are we on?
+            int characterIndex = 0;
+
+            for(int i = 0; i < diffs.Count; i++)
+            {
+
+            }
+
+            /*
+            Future: Develop custom patcher using diffs to:
+            reduce file size
+            make patcher more rigid and less prone to error
+            make applying patches *much* faster
+
+            New patch making procedure:
+
+            get diffs (diff_main)
+            MakePatches:
+            iterate through diffs, format them into a string which only stores DELETE and INSERT operations (with starting indices for insert and start + end indices for delete)
+            write string to file
+
+            CombinePatches:
+
+            combination modes:
+            1. if two diffs start on the same character or overlap, offset the lesser priority one behind the higher priority one
+            2. if two diffs start on the same character or overlap, remove the lesser priority one
+
+            ApplyPatches:
+            read string and interpret into diffs and starting character indices (and accept raw diffs and indices as params)
+            read file target file contents
+            
+            for INSERT operations insert the diff's text after the starting character index
+            for DELETE operations delete the text starting at the character index and ending at the length of the text to be deleted
+
+            write file contents to disk
+
+            Patch encoding format:
+
+            i/r (insert/delete)
+            +
+
+
+            */
+
+
         }
     }
 }
