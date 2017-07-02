@@ -31,11 +31,14 @@ namespace MAP
                 return new AnalysisResults(AnalysisResults.AnalysisStatus.FilesAreEqual);
             }
             // if a type is not equal, check the data in it to see what isn't equal, continue doing this for all nested data
-            for (int currenttype = 0; currenttype <= baseMod.Types.Count; currenttype++)
+            for (int currentType = 0; currentType <= baseMod.Types.Count; currentType++)
             {
-                if (baseMod.Types[currenttype] != modifiedMod.Types[currenttype])
+                if (baseMod.Types[currentType] != modifiedMod.Types[currentType])
                 {
-                    for(baseMod.Types[currenttype].)
+                    for(int currentMethod = 0; currentMethod <= baseMod.Types[currentType].Methods.Count; currentMethod++)
+                    {
+                        
+                    }
                 }
             }
 
