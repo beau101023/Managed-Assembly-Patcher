@@ -201,7 +201,7 @@ namespace MAP
 
         private void MoveItemUp_Click(object sender, RoutedEventArgs e)
         {
-            if (ModList.SelectedIndex != -1)
+            if (ModList.SelectedIndex != -1 && ModList.SelectedIndex != 0)
             {
                 int oldIndex = ModList.SelectedIndex;
 
@@ -215,7 +215,7 @@ namespace MAP
 
         private void MoveItemDown_Click(object sender, RoutedEventArgs e)
         {
-            if (ModList.SelectedIndex != -1)
+            if (ModList.SelectedIndex != -1 && ModList.SelectedIndex != fileList.Count - 1)
             {
                 int oldIndex = ModList.SelectedIndex;
 
@@ -248,7 +248,9 @@ namespace MAP
 
                 string modFileContent = File.ReadAllText(fileList[0].FullName);
 
-                PatchResults p = Patcher.ApplyPatches(baseFile1, modFileContent);
+                List<Patch> patches = Patcher.ParseStringToPatches(modFileContent);
+
+                PatchResults p = Patcher.ApplyPatches(baseFile1, patches);
 
                 if(p.status == PatchResults.PatchStatus.Error)
                 {
@@ -283,7 +285,7 @@ namespace MAP
 
                 foreach(FileInfo f in modFiles)
                 {
-                    patchLists.Add(Patcher.GetPatchesFromString(File.ReadAllText(f.FullName)));
+                    patchLists.Add(Patcher.ParseStringToPatches(File.ReadAllText(f.FullName)));
                 }
 
                 List<Patch> patches = Patcher.CombinePatches(patchLists);

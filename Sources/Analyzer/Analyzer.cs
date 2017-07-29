@@ -75,21 +75,21 @@ namespace MAP
         /// <summary>
         /// Generates a list of instructions to transform one string into another with the least modification.
         /// </summary>
-        private static string GenerateEditScript(string baseString, string targetString)
+        private static string GenerateEditScript(string basePath, string modPath)
         {
             diff_match_patch engine = new diff_match_patch();
 
             engine.Diff_Timeout = 0;
 
-            List<Diff> diffs = engine.diff_main(baseString, targetString, false);
+            List<Diff> diffs = engine.diff_main(basePath, modPath, false);
 
             //List<Patch> patches = engine.patch_make(baseString, diffs);
 
             //string results = engine.patch_toText(patches);
 
-            string results = Patcher.PatchMake(diffs);
+            List<Patch> patches = Patcher.PatchMake(diffs);
 
-            return results;
+            return Patcher.EncodePatchesToString(patches);
         }
     }
 }

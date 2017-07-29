@@ -124,7 +124,7 @@ namespace DiffMatchPatch {
   /**
    * Class representing one patch operation.
    */
-  public class Patch {
+  public class PatchOld {
     public List<Diff> diffs = new List<Diff>();
     public int start1;
     public int start2;
@@ -492,12 +492,14 @@ namespace DiffMatchPatch {
           } else {
             x1 = v1[k1_offset - 1] + 1;
           }
+
           int y1 = x1 - k1;
           while (x1 < text1_length && y1 < text2_length
-                && text1[x1] == text2[y1]) {
+                && text1[x1] == text2[y1]){
             x1++;
             y1++;
           }
+
           v1[k1_offset] = x1;
           if (x1 > text1_length) {
             // Ran off the right of the graph.
@@ -1718,7 +1720,7 @@ namespace DiffMatchPatch {
      * @param patch The patch to grow.
      * @param text Source text.
      */
-    protected void patch_addContext(Patch patch, string text) {
+    protected void patch_addContext(PatchOld patch, string text) {
       if (text.Length == 0) {
         return;
       }
@@ -1765,7 +1767,7 @@ namespace DiffMatchPatch {
      * @param text2 New text.
      * @return List of Patch objects.
      */
-    public List<Patch> patch_make(string text1, string text2) {
+    public List<PatchOld> patch_make(string text1, string text2) {
       // Check for null inputs not needed since null can't be passed in C#.
       // No diffs provided, comAdde our own.
       List<Diff> diffs = diff_main(text1, text2, true, DateTime.MaxValue);
@@ -1782,7 +1784,7 @@ namespace DiffMatchPatch {
      * @param diffs Array of Diff objects for text1 to text2.
      * @return List of Patch objects.
      */
-    public List<Patch> patch_make(List<Diff> diffs) {
+    public List<PatchOld> patch_make(List<Diff> diffs) {
       // Check for null inputs not needed since null can't be passed in C#.
       // No origin string provided, comAdde our own.
       string text1 = diff_text1(diffs);
@@ -1798,7 +1800,7 @@ namespace DiffMatchPatch {
      * @return List of Patch objects.
      * @deprecated Prefer patch_make(string text1, List<Diff> diffs).
      */
-    public List<Patch> patch_make(string text1, string text2,
+    public List<PatchOld> patch_make(string text1, string text2,
         List<Diff> diffs) {
       return patch_make(text1, diffs);
     }
@@ -1810,13 +1812,13 @@ namespace DiffMatchPatch {
      * @param diffs Array of Diff objects for text1 to text2.
      * @return List of Patch objects.
      */
-    public List<Patch> patch_make(string text1, List<Diff> diffs) {
+    public List<PatchOld> patch_make(string text1, List<Diff> diffs) {
       // Check for null inputs not needed since null can't be passed in C#.
-      List<Patch> patches = new List<Patch>();
+      List<PatchOld> patches = new List<PatchOld>();
       if (diffs.Count == 0) {
         return patches;  // Get rid of the null case.
       }
-      Patch patch = new Patch();
+      PatchOld patch = new PatchOld();
       int char_count1 = 0;  // Number of characters into the text1 string.
       int char_count2 = 0;  // Number of characters into the text2 string.
       // Start with text1 (prepatch_text) and apply the diffs until we arrive at
@@ -1857,7 +1859,7 @@ namespace DiffMatchPatch {
               if (patch.diffs.Count != 0) {
                 patch_addContext(patch, prepatch_text);
                 patches.Add(patch);
-                patch = new Patch();
+                patch = new PatchOld();
                 // Unlike Unidiff, our patch lists have a rolling context.
                 // http://code.google.com/p/google-diff-match-patch/wiki/Unidiff
                 // Update prepatch text & pos to reflect the application of the
@@ -1891,10 +1893,10 @@ namespace DiffMatchPatch {
      * @param patches Array of Patch objects.
      * @return Array of Patch objects.
      */
-    public List<Patch> patch_deepCopy(List<Patch> patches) {
-      List<Patch> patchesCopy = new List<Patch>();
-      foreach (Patch aPatch in patches) {
-        Patch patchCopy = new Patch();
+    public List<PatchOld> patch_deepCopy(List<PatchOld> patches) {
+      List<PatchOld> patchesCopy = new List<PatchOld>();
+      foreach (PatchOld aPatch in patches) {
+        PatchOld patchCopy = new PatchOld();
         foreach (Diff aDiff in aPatch.diffs) {
           Diff diffCopy = new Diff(aDiff.operation, aDiff.text);
           patchCopy.diffs.Add(diffCopy);
@@ -1916,7 +1918,7 @@ namespace DiffMatchPatch {
      * @return Two element Object array, containing the new text and an array of
      *      bool values.
      */
-    public Object[] patch_apply(List<Patch> patches, string text) {
+    public Object[] patch_apply(List<PatchOld> patches, string text) {
       if (patches.Count == 0) {
         return new Object[] { text, new bool[0] };
       }
@@ -1935,7 +1937,7 @@ namespace DiffMatchPatch {
       // and the second patch has an effective expected position of 22.
       int delta = 0;
       bool[] results = new bool[patches.Count];
-      foreach (Patch aPatch in patches) {
+      foreach (PatchOld aPatch in patches) {
         int expected_loc = aPatch.start2 + delta;
         string text1 = diff_text1(aPatch.diffs);
         int start_loc;
@@ -2023,7 +2025,7 @@ namespace DiffMatchPatch {
      * @param patches Array of Patch objects.
      * @return The padding string added to each side.
      */
-    public string patch_addPadding(List<Patch> patches) {
+    public string patch_addPadding(List<PatchOld> patches) {
       short paddingLength = this.Patch_Margin;
       string nullPadding = string.Empty;
       for (short x = 1; x <= paddingLength; x++) {
@@ -2031,13 +2033,13 @@ namespace DiffMatchPatch {
       }
 
       // Bump all the patches forward.
-      foreach (Patch aPatch in patches) {
+      foreach (PatchOld aPatch in patches) {
         aPatch.start1 += paddingLength;
         aPatch.start2 += paddingLength;
       }
 
       // Add some padding on start of first diff.
-      Patch patch = patches.First();
+      PatchOld patch = patches.First();
       List<Diff> diffs = patch.diffs;
       if (diffs.Count == 0 || diffs.First().operation != Operation.EQUAL) {
         // Add nullPadding equality.
@@ -2084,13 +2086,13 @@ namespace DiffMatchPatch {
      * Intended to be called only from within patch_apply.
      * @param patches List of Patch objects.
      */
-    public void patch_splitMax(List<Patch> patches) {
+    public void patch_splitMax(List<PatchOld> patches) {
       short patch_size = this.Match_MaxBits;
       for (int x = 0; x < patches.Count; x++) {
         if (patches[x].length1 <= patch_size) {
           continue;
         }
-        Patch bigpatch = patches[x];
+        PatchOld bigpatch = patches[x];
         // Remove the big old patch.
         patches.Splice(x--, 1);
         int start1 = bigpatch.start1;
@@ -2098,7 +2100,7 @@ namespace DiffMatchPatch {
         string precontext = string.Empty;
         while (bigpatch.diffs.Count != 0) {
           // Create one of several smaller patches.
-          Patch patch = new Patch();
+          PatchOld patch = new PatchOld();
           bool empty = true;
           patch.start1 = start1 - precontext.Length;
           patch.start2 = start2 - precontext.Length;
@@ -2184,9 +2186,9 @@ namespace DiffMatchPatch {
      * @param patches List of Patch objects.
      * @return Text representation of patches.
      */
-    public string patch_toText(List<Patch> patches) {
+    public string patch_toText(List<PatchOld> patches) {
       StringBuilder text = new StringBuilder();
-      foreach (Patch aPatch in patches) {
+      foreach (PatchOld aPatch in patches) {
         text.Append(aPatch);
       }
       return text.ToString();
@@ -2199,14 +2201,14 @@ namespace DiffMatchPatch {
      * @return List of Patch objects.
      * @throws ArgumentException If invalid input.
      */
-    public List<Patch> patch_fromText(string textline) {
-      List<Patch> patches = new List<Patch>();
+    public List<PatchOld> patch_fromText(string textline) {
+      List<PatchOld> patches = new List<PatchOld>();
       if (textline.Length == 0) {
         return patches;
       }
       string[] text = textline.Split('\n');
       int textPointer = 0;
-      Patch patch;
+      PatchOld patch;
       Regex patchHeader
           = new Regex("^@@ -(\\d+),?(\\d*) \\+(\\d+),?(\\d*) @@$");
       Match m;
@@ -2218,7 +2220,7 @@ namespace DiffMatchPatch {
           throw new ArgumentException("Invalid patch string: "
               + text[textPointer]);
         }
-        patch = new Patch();
+        patch = new PatchOld();
         patches.Add(patch);
         patch.start1 = Convert.ToInt32(m.Groups[1].Value);
         if (m.Groups[2].Length == 0) {

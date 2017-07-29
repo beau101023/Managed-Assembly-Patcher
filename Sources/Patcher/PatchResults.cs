@@ -31,7 +31,7 @@ namespace MAP
         /// <summary>
         /// Only call this constructor if there is a problem.
         /// </summary>
-        public PatchResults(PatchStatus _status)
+        public PatchResults()
         {
             status = PatchStatus.Error;
         }
@@ -67,6 +67,13 @@ namespace MAP
             {
                 status = PatchStatus.Failure;
             }
+        }
+
+        public PatchResults(string _patchedText, PatchStatus _status)
+        {
+            patchedText = _patchedText;
+
+            status = _status;
         }
 
         /// <summary>

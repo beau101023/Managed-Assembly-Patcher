@@ -8,126 +8,36 @@ namespace MAP
 {
     public class Patcher
     {
-        /// <summary>
-        /// Takes lists of patches and combines them into a single list.
-        /// </summary>
-        [Obsolete("Use CombineDiffs")]
-        static public List<Patch> CombinePatches(List<List<Patch>> patchLists)
+        static public List<Patch> PatchMake(List<Diff> diffs)
         {
-            List<Patch> tempList = new List<Patch>();
-
-            List<int> toBeRemoved = new List<int>();
-
-            foreach(List<Patch> plist in patchLists)
-            {
-                tempList.AddRange(plist);
-            }
-
-            for (int i = 0; i < tempList.Count; i++)
-            {
-                // compare i against everything in front of it
-                for (int j = i + 1; j < tempList.Count; j++)
-                {
-                    if (tempList[i] == tempList[j] && !toBeRemoved.Contains(j))
-                    {
-                        // mark all entries equal to i for removal.
-                        toBeRemoved.Add(j);
-                    }
-                }
-            }
-            
-            foreach(int index in toBeRemoved)
-            {
-                tempList.RemoveAt(index);
-            }
-
-            List<Patch> resultList = tempList;
-
-            return tempList;
-        }
-
-        /// <summary>
-        /// Takes an edit script and applies it to the file specified by filePath.
-        /// </summary>
-        [Obsolete("Old patching method which does not use the new, custom encoding system.")]
-        static public PatchResults ApplyPatches(string filePath, string editScript)
-        {
-            diff_match_patch patcher = new diff_match_patch();
-
-            patcher.Patch_DeleteThreshold = 0f;
-
-            patcher.Match_Threshold = 0f;
-
-            List<Patch> patches = patcher.patch_fromText(editScript);
-
-            Object[] patcherResults = patcher.patch_apply(patches, File.ReadAllText(filePath));
-
-            return new PatchResults((string)patcherResults[0], (bool[])patcherResults[1]);
-        }
-
-        /// <summary>
-        /// Takes a list of patch objects and applies them to the file specified by filePath.
-        /// </summary>
-        [Obsolete("Old patching method which does not use the new, custom encoding system.")]
-        static public PatchResults ApplyPatches(string filePath, List<Patch> editScript)
-        {
-            diff_match_patch patcher = new diff_match_patch();
-
-            patcher.Patch_DeleteThreshold = 0f;
-
-            patcher.Match_Threshold = 0f;
-
-            patcher.Match_Distance = 0;
-
-            Object[] patcherResults = patcher.patch_apply(editScript, File.ReadAllText(filePath));
-
-            return new PatchResults((string) patcherResults[0], (bool[]) patcherResults[1]);
-        }
-
-        static public List<Patch> GetPatchesFromString(string patchString)
-        {
-            diff_match_patch patcher = new diff_match_patch();
-
-            return patcher.patch_fromText(patchString);
-        }
-
-        static public string PatchMake(List<Diff> diffs)
-        {
-            StringBuilder sb = new StringBuilder();
+            List<Patch> patches = new List<Patch>();
 
             // what character are we on?
             int characterIndex = 0;
 
             for(int i = 0; i < diffs.Count; i++)
             {
-                if(diffs[i].operation == Operation.DELETE)
+                switch (diffs[i].operation)
                 {
-                    // start of the deletion
-                    sb.Append(characterIndex);
-                    // seperator (placeholder for when I figure out what characters are actually acceptable)
-                    sb.Append('♪');
-                    // end of the deletion (start + deleted text length)
-                    sb.Append(characterIndex + diffs[i].text.Length);
-                    // statement end
-                    sb.Append('☺');
+                    // don't add to the character index for DELETE
+                    case Operation.DELETE:
+                        Patch deleteP = new Patch(characterIndex, diffs[i].text.Length);
+                        patches.Add(deleteP);
+                        break;
+                    // add insert length to character index
+                    case Operation.INSERT:
+                        Patch insertP = new Patch(characterIndex, diffs[i].text);
+                        patches.Add(insertP);
+                        characterIndex += diffs[i].text.Length;
+                        break;
+                    // add length, don't create patch for EQUAL diffs
+                    case Operation.EQUAL:
+                        characterIndex += diffs[i].text.Length;
+                        break;
                 }
-                if(diffs[i].operation == Operation.INSERT)
-                {
-                    // starting index of the insert
-                    sb.Append(characterIndex);
-                    // seperator
-                    sb.Append('♪');
-                    // text to insert
-                    sb.Append(diffs[i].text);
-                    // statement end
-                    sb.Append('☺');
-                }
-
-                // keep track of how far along we are, we don't need to do anything special for EQUAL diffs
-                characterIndex += diffs[i].text.Length;
             }
 
-            return sb.ToString();
+            return patches;
         }
 
         /*
@@ -145,7 +55,7 @@ namespace MAP
 
         IF both are insert diffs:
             it will offset overlapping diffs away from each other, such that they no longer overlap (given 0 being an overlapping character and - being a non-overlapping character, it will transform -0- to ----, -00- to ------, etc)
-            if two diffs overlap perfectly (such that both the start and end positions of the diffs match), the lesser-priority diff will be removed (the one with the greatest index in the list).
+            if two diffs overlap perfectly (such that both the start and end positions of the diffs match), the lesser-priority diff will be offset forwards as above.
             if two diffs overlap such that one is contained in the other, but the sizes of the diffs are not equal, the smaller one will be offset to the side of the larger diff that it is the closest to.
             if two diffs overlap such that one is contained in the other and is exactly centered inside the other, the smaller diff will be removed (note: this is not optimal, find a better way to do this)
         IF both are delete diffs:
@@ -161,75 +71,149 @@ namespace MAP
         /// <summary>
         /// Compares lists of diffs, lists should be passed in order of priority from greatest to least, such that the item with greatest priority is at index 0, and least priority at the end of the list
         /// </summary>
-        List<Diff> CombinePatches(List<List<Diff>> diffs)
+        // NOTE: Develop method for storing character indices (start and end positions of diffs) VERY IMPORTANT
+        static public List<Patch> CombinePatches(List<List<Patch>> patchLists)
         {
-            List<Diff> results = new List<Diff>();
+            List<Patch> patches = new List<Patch>();
+
+            foreach(List<Patch> pList in patchLists)
+            {
+                patches.AddRange(pList);
+            }
 
             List<int> toBeRemoved = new List<int>();
 
-            foreach (List<Diff> dList in diffs)
-            {
-                results.AddRange(dList);
-            }
-
-            for (int i = 0; i < results.Count; i++)
+            for (int i = 0; i < patches.Count; i++)
             {
                 // compare results[i] against everything in front of it
-                for (int j = i + 1; j < results.Count; j++)
+                for (int j = i + 1; j < patches.Count; j++)
                 {
-                    if (results[i] == results[j] && !toBeRemoved.Contains(j))
+                    if(patches[i].operation == Operation.INSERT && patches[j].operation == Operation.INSERT)
                     {
-                        // mark all instances of i other than the primary one for removal
-                        toBeRemoved.Add(j);
+                        int endingIndexI = patches[i].startingIndex + patches[i].length;
+                        int endingIndexJ = patches[j].startingIndex + patches[j].length;
+
+                        // check for patch overlap where patches[i] is on the end of patches[j]
+                        if (patches[i].startingIndex < endingIndexJ && patches[i].startingIndex > patches[j].startingIndex)
+                        {
+
+                        }
                     }
-                    if (results[i].operation == results[j].operation && results[i].text == results[j].text && !toBeRemoved.Contains(j))
+                    if (patches[i].operation == Operation.DELETE && patches[j].operation == Operation.DELETE)
                     {
-                        // mark all entries equal to i in content for removal
-                        toBeRemoved.Add(j);
+
+                    }
+                    if (patches[i].operation != patches[j].operation)
+                    {
+
                     }
                 }
             }
 
             foreach (int index in toBeRemoved)
             {
-                results.RemoveAt(index);
+                patches.RemoveAt(index);
             }
 
-            return results;
+            return patches;
+        }
+
+        /// <summary>
+        /// Parses a string to a list of patches.
+        /// </summary>
+        static public List<Patch> ParseStringToPatches(string patchString)
+        {
+            List<Patch> patches = new List<Patch>();
+
+            List<string> patchTemp = new List<string>(patchString.Split((char)9246));
+
+            for (int i = 0; i < patchTemp.Count; i += 2)
+            {
+                if(patchTemp[i].Substring(0, 1) == "d")
+                {
+                    patches.Add
+                    (
+                        new Patch(int.Parse(patchTemp[i].Substring(1)), int.Parse(patchTemp[i + 1]))
+                    );
+                }
+                if(patchTemp[i].Substring(0, 1) == "i")
+                {
+                    patches.Add
+                    (
+                        new Patch(int.Parse(patchTemp[i].Substring(1)), patchTemp[i + 1])
+                    );
+                }
+            }
+
+            return patches;
+        }
+
+
+        /// <summary>
+        /// Encodes a list of patches to a string for export.
+        /// </summary>
+        static public string EncodePatchesToString(List<Patch> patches)
+        {
+            StringBuilder sb = new StringBuilder();
+
+            for(int i = 0; i < patches.Count; i++)
+            {
+
+                if (patches[i].operation == Operation.DELETE)
+                {
+                    sb.Append('d');
+                    sb.Append(patches[i].startingIndex.ToString());
+                    sb.Append((char)9246);
+                    sb.Append(patches[i].length.ToString());
+                    sb.Append((char)9246);
+                }
+                else if (patches[i].operation == Operation.INSERT)
+                {
+                    sb.Append('i');
+                    sb.Append(patches[i].startingIndex.ToString());
+                    sb.Append((char)9246);
+                    sb.Append(patches[i].content);
+                    sb.Append((char)9246);
+                }
+            }
+
+            // removes the extra seperator character at the end. Probably not the best solution.
+            sb.Remove(sb.Length - 1, 1);
+
+            return sb.ToString();
+        }
+
+        static public PatchResults ApplyPatches(string filePath, List<Patch> patches)
+        {
+            StringBuilder tempContent = new StringBuilder(File.ReadAllText(filePath));
+
+            patches.Sort
+            (
+                (x, y) => x.startingIndex.CompareTo(y.startingIndex)
+            );
+
+            for(int currentPatch = 0; currentPatch < patches.Count; currentPatch++)
+            {
+                if (patches[currentPatch].operation == Operation.DELETE)
+                {
+                    // p.endingIndex - p.startingIndex gives us the length of characters removed
+                    tempContent.Remove(patches[currentPatch].startingIndex, patches[currentPatch].length);
+                }
+                if (patches[currentPatch].operation == Operation.INSERT)
+                {
+                    // if we've gone over the length limit, append the patch content to the end. This really shouldn't happen more than once, patcher might be broken if it does.
+                    if (patches[currentPatch].startingIndex > tempContent.Length)
+                    {
+                        tempContent.Append(patches[currentPatch].content);
+                    }
+                    else
+                    {
+                        tempContent.Insert(patches[currentPatch].startingIndex, patches[currentPatch].content);
+                    }
+                }
+            }
+
+            return new PatchResults(tempContent.ToString(), PatchResults.PatchStatus.Success);
         }
     }
 }
-
-/*
-Future: Develop custom patcher using diffs to:
-reduce file size
-make patcher more rigid and less prone to error
-make applying patches *much* faster
-
-New patch making procedure:
-
-get diffs (diff_main)
-
-MakePatches: DONE
-iterate through diffs, format them into a string which only stores DELETE and INSERT operations (with starting indices for insert and start + end indices for delete)
-write string to file
-
-CombinePatches:
-
-combination modes:
-1. if two diffs start on the same character or overlap, offset the lesser priority one behind the higher priority one
-2. if two diffs start on the same character or overlap, remove the lesser priority one
-
-ApplyPatches:
-read string and interpret into diffs and starting character indices (and accept raw diffs and indices as params)
-read file target file contents
-
-for INSERT operations insert the diff's text after the starting character index
-for DELETE operations delete the text starting at the character index and ending at the length of the text to be deleted
-
-write file contents to disk
-
-Patch encoding format:
-
-(placeholder for now)
-*/
