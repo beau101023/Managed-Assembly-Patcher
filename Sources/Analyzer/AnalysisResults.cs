@@ -3,18 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ObjectDiffer;
 
 namespace MAP
 {
-    class AnalysisResults
+    public class AnalysisResults
     {
         public AnalysisStatus status;
 
         public AnalysisResultsType resultType;
 
-        public string editScript = null;
+        public byte[] editScript = null;
 
-        public AnalysisResults(AnalysisStatus _status, AnalysisResultsType _resultType, string _editScript)
+        public AnalysisResults(AnalysisStatus _status, AnalysisResultsType _resultType, byte[] _editScript)
         {
             status = _status;
 
@@ -46,7 +47,7 @@ namespace MAP
         public enum AnalysisResultsType
         {
             RawFilePatch,
-            DNLibPatch
+            ILPatch
         }
     }
 }

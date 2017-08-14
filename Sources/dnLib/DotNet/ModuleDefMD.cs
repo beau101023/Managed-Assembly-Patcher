@@ -1652,12 +1652,14 @@ namespace dnlib.DotNet {
 			return new EmbeddedResource(mr.Name, MemoryImageStream.CreateEmpty(), mr.Flags) { Rid = rid, Offset = mr.Offset };
 		}
 
+#pragma warning disable CS0436 // Type conflicts with imported type
 		/// <summary>
 		/// Creates a resource stream that can access part of the resource section of this module
 		/// </summary>
 		/// <param name="offset">Offset of resource relative to the .NET resources section</param>
 		/// <returns>A stream the size of the resource</returns>
 		[HandleProcessCorruptedStateExceptions, SecurityCritical]	// Req'd on .NET 4.0
+#pragma warning restore CS0436 // Type conflicts with imported type
 		IImageStream CreateResourceStream(uint offset) {
 			IImageStream fs = null, imageStream = null;
 			try {

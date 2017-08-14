@@ -118,9 +118,10 @@ namespace dnlib.DotNet.MD {
 			: base(fullStream, baseOffset) {
 		}
 
-		/// <inheritdoc/>
-		[HandleProcessCorruptedStateExceptions, SecurityCritical]	// Req'd on .NET 4.0
-		public override void Initialize(long mask) {
+#pragma warning disable CS0436 // Type conflicts with imported type
+        [HandleProcessCorruptedStateExceptions, SecurityCritical]   // Req'd on .NET 4.0
+#pragma warning restore CS0436 // Type conflicts with imported type
+        public override void Initialize(long mask) {
 			tableHeaders = new TableHeader[MAX_TABLES];
 			for (int i = 0; i < tableHeaders.Length; i++) {
 				fullStream.Position = baseOffset + 4 + i * 4;
@@ -208,8 +209,10 @@ namespace dnlib.DotNet.MD {
 			: base(fullStream, baseOffset) {
 		}
 
+#pragma warning disable CS0436 // Type conflicts with imported type
 		/// <inheritdoc/>
 		[HandleProcessCorruptedStateExceptions, SecurityCritical]	// Req'd on .NET 4.0
+#pragma warning restore CS0436 // Type conflicts with imported type
 		public override void Initialize(long mask) {
 			tableHeaders = new TableHeader[MAX_TABLES];
 			for (int i = 0; i < tableHeaders.Length; i++) {

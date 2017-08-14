@@ -121,8 +121,10 @@ namespace dnlib.DotNet.MD {
 			: base(heapType, reader, baseOffset) {
 		}
 
+#pragma warning disable CS0436 // Type conflicts with imported type
 		/// <inheritdoc/>
 		[HandleProcessCorruptedStateExceptions, SecurityCritical]	// Req'd on .NET 4.0
+#pragma warning restore CS0436 // Type conflicts with imported type
 		public override void Initialize(long mask) {
 			try {
 				offsetMask = mask;
@@ -178,8 +180,10 @@ namespace dnlib.DotNet.MD {
 			: base(heapType, reader, baseOffset) {
 		}
 
+#pragma warning disable CS0436 // Type conflicts with imported type
 		/// <inheritdoc/>
 		[HandleProcessCorruptedStateExceptions, SecurityCritical]	// Req'd on .NET 4.0
+#pragma warning restore CS0436 // Type conflicts with imported type
 		public override void Initialize(long mask) {
 			try {
 				offsetMask = mask;

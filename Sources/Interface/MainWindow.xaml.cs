@@ -144,31 +144,39 @@ namespace MAP
 
                 AnalysisResults r = Analyzer.RawAnalyze(baseFile, modFile);
 
-                if (r.status != AnalysisResults.AnalysisStatus.Success)
+                switch (r.status)
                 {
-                    if(r.status == AnalysisResults.AnalysisStatus.FilesAreEqual)
-                    {
+                    case AnalysisResults.AnalysisStatus.Success:
+                        createTextBox.Content = "Success! Diffmod can be found at " + temp;
+                        File.WriteAllBytes(temp, r.editScript);
+                        return;
+
+                    case AnalysisResults.AnalysisStatus.FilesAreEqual:
                         createTextBox.Content = "The files you have selected appear to have the same contents.";
-                    }
-                    if (r.status == AnalysisResults.AnalysisStatus.FilesSamePath)
-                    {
+                        return;
+
+                    case AnalysisResults.AnalysisStatus.FilesSamePath:
                         createTextBox.Content = "Please select two different files.";
-                    }
-                    if (r.status == AnalysisResults.AnalysisStatus.PatchError)
-                    {
+                        return;
+
+                    case AnalysisResults.AnalysisStatus.PatchError:
                         createTextBox.Content = "Something went horribly wrong, please try again.";
-                    }
+                        return;
+                }
+            }
+
+            if(ModeSelector.SelectedItem == ILMode)
+            {
+                string temp = CreateFileFromDialog(".diffmod", "Diffmod Files (*.diffmod)|*.diffmod|All Files|*.*");
+
+                if (temp == null)
+                {
                     return;
                 }
 
-                createTextBox.Content = "Success! Diffmod can be found at " + temp;
+                AnalysisResults results = Analyzer.ILAnalyze(baseFile, modFile);
 
-                File.WriteAllText(temp, r.editScript);
-            }
 
-            if(ModeSelector.SelectedItem == DNMode)
-            {
-                
             }
         }
 
@@ -246,9 +254,9 @@ namespace MAP
                     return;
                 }
 
-                string modFileContent = File.ReadAllText(fileList[0].FullName);
+                byte[] modFileContent = File.ReadAllBytes(fileList[0].FullName);
 
-                List<Patch> patches = Patcher.ParseStringToPatches(modFileContent);
+                List<Patch> patches = Patcher.ParseByteArrayToPatches(modFileContent);
 
                 PatchResults p = Patcher.ApplyPatches(baseFile1, patches);
 
@@ -285,7 +293,7 @@ namespace MAP
 
                 foreach(FileInfo f in modFiles)
                 {
-                    patchLists.Add(Patcher.ParseStringToPatches(File.ReadAllText(f.FullName)));
+                    patchLists.Add(Patcher.ParseByteArrayToPatches(File.ReadAllBytes(f.FullName)));
                 }
 
                 List<Patch> patches = Patcher.CombinePatches(patchLists);

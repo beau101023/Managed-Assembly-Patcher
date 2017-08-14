@@ -7,46 +7,46 @@ using System.IO;
 using dnlib.DotNet;
 using dnlib.DotNet.Emit;
 using DiffMatchPatch;
+using ObjectDiffer;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace MAP
 {
-    class Analyzer
+    public class Analyzer
     {
-        public static void Test()
+
+        /// <summary>
+        /// Analyzes IL code decompiled by DNLib
+        /// </summary>
+        public static AnalysisResults ILAnalyze(string baseFilePath, string modifiedFilePath)
         {
-            ModuleDefMD mod = ModuleDefMD.Load(typeof(Analyzer).Module);
-
-            System.Diagnostics.Debug.WriteLine(mod.Assembly);
-
-            
-        }
-
-        public static AnalysisResults DNLibAnalyze(string baseFilePath, string modifiedFilePath)
-        {
+            // load assemblies with dnSpy
             ModuleDefMD baseMod = ModuleDefMD.Load(baseFilePath);
             ModuleDefMD modifiedMod = ModuleDefMD.Load(modifiedFilePath);
 
+            // check straight away for equality, we don't need to waste time with this.
             if (baseMod == modifiedMod)
             {
                 return new AnalysisResults(AnalysisResults.AnalysisStatus.FilesAreEqual);
             }
-            // if a type is not equal, check the data in it to see what isn't equal, continue doing this for all nested data
-            for (int currentType = 0; currentType <= baseMod.Types.Count; currentType++)
+
+            // new diffing library is nice and simple
+            DifferFactory factory = new DifferFactory();
+            var d = factory.GetDefault();
+
+            Difference diffObj = d.Diff(baseMod, modifiedMod);
+
+            byte[] editScript;
+
+            // serialize diffObj to a byte array for writing to disk
+            BinaryFormatter bf = new BinaryFormatter();
+            using (var ms = new MemoryStream())
             {
-                if (baseMod.Types[currentType] != modifiedMod.Types[currentType])
-                {
-                    for(int currentMethod = 0; currentMethod <= baseMod.Types[currentType].Methods.Count; currentMethod++)
-                    {
-                        
-                    }
-                }
+                bf.Serialize(ms, diffObj);
+                editScript = ms.ToArray();
             }
 
-            AnalysisResults results = new AnalysisResults(AnalysisResults.AnalysisStatus.Success, AnalysisResults.AnalysisResultsType.DNLibPatch);
-
-            System.Diagnostics.Debug.WriteLine(results);
-
-            return results;
+            return new AnalysisResults(AnalysisResults.AnalysisStatus.Success, AnalysisResults.AnalysisResultsType.ILPatch, editScript);
         }
 
         /// <summary>
@@ -67,7 +67,7 @@ namespace MAP
                 return new AnalysisResults(AnalysisResults.AnalysisStatus.FilesAreEqual);
             }
 
-            string editScript = GenerateEditScript(baseString, modifiedString);
+            byte[] editScript = GenerateEditScript(baseString, modifiedString);
 
             return new AnalysisResults(AnalysisResults.AnalysisStatus.Success, AnalysisResults.AnalysisResultsType.RawFilePatch, editScript);
         }
@@ -75,7 +75,7 @@ namespace MAP
         /// <summary>
         /// Generates a list of instructions to transform one string into another with the least modification.
         /// </summary>
-        private static string GenerateEditScript(string basePath, string modPath)
+        private static byte[] GenerateEditScript(string basePath, string modPath)
         {
             diff_match_patch engine = new diff_match_patch();
 
@@ -89,7 +89,7 @@ namespace MAP
 
             List<Patch> patches = Patcher.PatchMake(diffs);
 
-            return Patcher.EncodePatchesToString(patches);
+            return Patcher.EncodePatchesToByteArray(patches);
         }
     }
 }

@@ -89,7 +89,9 @@ namespace dnlib.DotNet.MD {
 			this.endOffset = (long)baseOffset + imageStream.Length;
 		}
 
+#pragma warning disable CS0436 // Type conflicts with imported type
 		[HandleProcessCorruptedStateExceptions, SecurityCritical]	// Req'd on .NET 4.0
+#pragma warning restore CS0436 // Type conflicts with imported type
 		HotTableStream CreateHotTableStream() {
 			try {
 				return CreateHotTableStreamImpl();
@@ -102,7 +104,9 @@ namespace dnlib.DotNet.MD {
 			}
 		}
 
+#pragma warning disable CS0436 // Type conflicts with imported type
 		[HandleProcessCorruptedStateExceptions, SecurityCritical]	// Req'd on .NET 4.0
+#pragma warning restore CS0436 // Type conflicts with imported type
 		ThreadSafe.IList<HotHeapStream> CreateHotHeapStreams() {
 			try {
 				return CreateHotHeapStreams2();
