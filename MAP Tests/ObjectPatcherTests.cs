@@ -8,6 +8,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ObjectDiffer;
 using dnlib.DotNet;
 using System.IO;
+using System.Collections;
 
 namespace MAP_Tests
 {
@@ -22,17 +23,43 @@ namespace MAP_Tests
             ModuleDefMD original = ModuleDefMD.Load(projectDirectory + @"\TestFiles\Assembly-CSharp_RECOMPILED.dll");
             ModuleDefMD modified = ModuleDefMD.Load(projectDirectory + @"\TestFiles\Assembly-CSharp_REDS SPIT DADDIES.dll");
 
-            Difference diff = DiffObjectPatcher.GenerateDifference(original.Assembly, modified.Assembly);
+            List<Difference> TypeDifferences = new List<Difference>();
 
-            AssemblyDef diffed = DiffObjectPatcher.ApplyDifference(original.Assembly, diff);
+            List<TypeDef> originalTypes = new List<TypeDef>(original.GetTypes());
+            List<TypeDef> modifiedTypes = new List<TypeDef>(modified.GetTypes());
 
-            // check for null difference
-            if (diff == null)
+            // handle this later!
+            if(originalTypes.Count != modifiedTypes.Count)
             {
-                Assert.Fail();
+                Assert.Inconclusive();
             }
 
-            Assert.AreEqual(original, diffed);
+            Difference diff = DiffObjectPatcher.GenerateDifference(original, modified);
+
+            Assert.IsNotNull(diff);
+
+            ModuleDefMD diffedModule = original;
+
+            List<TypeDef> diffedTypes = new List<TypeDef>();
+
+            for (int i = 0; i < TypeDifferences.Count; i++)
+            {
+                TypeDef tempType = originalTypes[i];
+
+                DiffObjectPatcher.ApplyDifference<TypeDef>(ref tempType, TypeDifferences[i]);
+
+                diffedTypes[i] = tempType;
+            }
+
+            // find out how to set types in ModuleDefMD
+            diffedModule.Types.Clear();
+
+            foreach(TypeDef t in diffedTypes)
+            {
+                diffedModule.Types.Add(t);
+            }
+
+            Assert.AreEqual(original, diffedModule);
         }
     }
 }

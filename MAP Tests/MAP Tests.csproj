@@ -8,7 +8,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>MAP_Tests</RootNamespace>
     <AssemblyName>MAP Tests</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
@@ -16,6 +16,7 @@
     <ReferencePath>$(ProgramFiles)\Common Files\microsoft shared\VSTT\$(VisualStudioVersion)\UITestExtensionPackages</ReferencePath>
     <IsCodedUITest>False</IsCodedUITest>
     <TestProjectType>UnitTest</TestProjectType>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -50,13 +51,14 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="ObjectDifferTesting.cs" />
     <Compile Include="ObjectPatcherTests.cs" />
     <Compile Include="RawPatcherTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ObjectDiffer\ObjectDiffer.csproj">
-      <Project>{05f01d1e-3bda-4630-96a2-ba050065cff3}</Project>
+    <ProjectReference Include="..\..\ObjectDiffer\ObjectDiffer\ObjectDiffer.csproj">
+      <Project>{9e2b1813-57cd-4a7a-aab5-77171d1f3ab0}</Project>
       <Name>ObjectDiffer</Name>
     </ProjectReference>
     <ProjectReference Include="..\Sources\Managed Assembly Patcher.csproj">
